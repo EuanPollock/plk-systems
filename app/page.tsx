@@ -139,8 +139,8 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       Spreadsheets, paperwork and disconnected tools can get a business started — but they shouldn&apos;t hold it back.
     </p>
 
-    <div className="mt-16 grid gap-5 md:grid-cols-3">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+    <div className="mt-16 grid gap-4 sm:gap-6 md:grid-cols-3">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
         <span className="text-sm font-medium text-blue-500">01</span>
 
         <h3 className="mt-6 text-xl font-semibold">
@@ -153,7 +153,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
         <span className="text-sm font-medium text-blue-500">02</span>
 
         <h3 className="mt-6 text-xl font-semibold">
@@ -166,7 +166,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
         <span className="text-sm font-medium text-blue-500">03</span>
 
         <h3 className="mt-6 text-xl font-semibold">
