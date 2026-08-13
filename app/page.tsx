@@ -66,62 +66,62 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   return (
     <main className="min-h-screen bg-[#050A13] text-white">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6">
-        <header className="flex items-center justify-between py-6">
-          <Image
-  src="/plk-logo.png"
-  alt="PLK Systems"
-  width={180}
-  height={75}
-  priority
-  className="h-20 w-auto object-contain"
-/>
+        <header className="flex items-center justify-between py-4 sm:py-6">
+  <Image
+    src="/plk-logo.png"
+    alt="PLK Systems"
+    width={180}
+    height={75}
+    priority
+    className="h-16 w-auto object-contain sm:h-20"
+  />
 
-          <nav className="hidden gap-8 text-sm text-slate-300 md:flex">
-            <a href="#services" className="hover:text-white">
-              Services
-            </a>
-            <a href="#work" className="hover:text-white">
-              Our Work
-            </a>
-            <a href="#about" className="hover:text-white">
-              About
-            </a>
-            <a href="#contact" className="hover:text-white">
-              Contact
-            </a>
-          </nav>
-        </header>
+  <nav className="hidden gap-8 text-sm text-slate-300 md:flex">
+    <a href="#services" className="hover:text-white">
+      Services
+    </a>
+    <a href="#work" className="hover:text-white">
+      Our Work
+    </a>
+    <a href="#about" className="hover:text-white">
+      About
+    </a>
+    <a href="#contact" className="hover:text-white">
+      Contact
+    </a>
+  </nav>
+</header>
 
-        <section className="flex flex-1 flex-col items-center justify-center py-24 text-center">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-            PLK Systems
-          </p>
+<section className="flex flex-1 flex-col items-center justify-center py-12 text-center sm:py-20 md:py-24">
+  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500 sm:mb-5">
+    PLK Systems
+  </p>
 
-          <h1 className="max-w-5xl text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
-            Software built around
-            <span className="block">your business.</span>
-          </h1>
+  <h1 className="max-w-5xl text-4xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
+    Software built around
+    <span className="block">your business.</span>
+  </h1>
 
-          <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-400">
-            We build practical software that replaces spreadsheets, paperwork and repetitive admin — designed around the way your business actually works.
-          </p>
+  <p className="mt-6 max-w-2xl text-base leading-7 text-slate-400 sm:mt-8 sm:text-lg sm:leading-8">
+    We build practical software that replaces spreadsheets, paperwork and repetitive admin — designed around the way your business actually works.
+  </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <a
-              href="#contact"
-              className="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-500"
-            >
-              Discuss your project →
-            </a>
+  <div className="mt-8 flex w-full max-w-md flex-col gap-4 sm:mt-10 sm:w-auto sm:max-w-none sm:flex-row">
+    <a
+      href="#contact"
+      className="rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 sm:py-3"
+    >
+      Discuss your project →
+    </a>
 
-            <a
-              href="#services"
-              className="rounded-xl border border-slate-700 px-6 py-3 font-medium text-slate-200 transition hover:border-slate-500"
-            >
-              See what we build
-            </a>
-          </div>
-        </section>
+    <a
+      href="#services"
+      className="rounded-xl border border-slate-700 px-6 py-4 font-medium text-slate-200 transition hover:border-slate-500 sm:py-3"
+    >
+      See what we build
+    </a>
+  </div>
+</section>
         <section
   id="problem"
   className="border-t border-white/10 py-24 sm:py-32"
