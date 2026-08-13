@@ -437,10 +437,10 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 </section>
 <section
   id="contact"
-  className="border-t border-white/10 py-24 sm:py-32"
+  className="border-t border-white/10 py-20 sm:py-32"
 >
   <div className="mx-auto max-w-6xl">
-    <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
       
       <div className="flex flex-col justify-center">
         <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
@@ -457,13 +457,13 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
           whether software can make it simpler.
         </p>
 
-        <p className="mt-8 text-sm leading-6 text-slate-500">
+        <p className="mt-6 text-sm leading-6 text-slate-500 sm:mt-8">
           No technical knowledge needed. Just tell us how your business
           currently works.
         </p>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           
           <div className="grid gap-6 sm:grid-cols-2">
@@ -558,23 +558,24 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
           </div>
 
           <button
-  type="submit"
-  disabled={submitting}
-  className="w-full rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
->
-  {submitting ? "Sending..." : "Tell us your problem →"}
-</button>
-{success && (
-  <p className="text-sm text-emerald-400">
-    Thanks — your enquiry has been sent successfully.
-  </p>
-)}
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "Sending..." : "Tell us your problem →"}
+          </button>
 
-{errorMessage && (
-  <p className="text-sm text-red-400">
-    {errorMessage}
-  </p>
-)}
+          {success && (
+            <p className="text-sm text-emerald-400">
+              Thanks — your enquiry has been sent successfully.
+            </p>
+          )}
+
+          {errorMessage && (
+            <p className="text-sm text-red-400">
+              {errorMessage}
+            </p>
+          )}
         </form>
       </div>
 
