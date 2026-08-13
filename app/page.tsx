@@ -73,7 +73,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   width={180}
   height={75}
   priority
-  className="h-14 w-auto object-contain"
+  className="h-18 w-auto object-contain"
 />
 
           <nav className="hidden gap-8 text-sm text-slate-300 md:flex">
@@ -103,8 +103,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-400">
-            We design and build modern software that helps small businesses
-            replace spreadsheets, paperwork and repetitive admin.
+            We build practical software that replaces spreadsheets, paperwork and repetitive admin — designed around the way your business actually works.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -112,7 +111,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
               href="#contact"
               className="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-500"
             >
-              Tell us your problem →
+              Discuss your project →
             </a>
 
             <a
