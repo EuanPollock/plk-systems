@@ -1,5 +1,68 @@
+
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 export default function Home() {
+  const [submitting, setSubmitting] = useState(false);
+const [success, setSuccess] = useState(false);
+const [errorMessage, setErrorMessage] = useState("");
+async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+
+  setSubmitting(true);
+  setSuccess(false);
+  setErrorMessage("");
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  const enquiry = {
+    name: String(formData.get("name") || ""),
+    business_name: String(formData.get("business") || ""),
+    email: String(formData.get("email") || ""),
+    phone: String(formData.get("phone") || ""),
+    problem: String(formData.get("problem") || ""),
+  };
+
+  // Save the enquiry to Supabase
+  const { error } = await supabase.from("enquiries").insert({
+    name: enquiry.name,
+    business_name: enquiry.business_name || null,
+    email: enquiry.email,
+    phone: enquiry.phone || null,
+    problem: enquiry.problem,
+  });
+
+  if (error) {
+    console.error("Supabase error:", error);
+    setErrorMessage("Something went wrong. Please try again.");
+    setSubmitting(false);
+    return;
+  }
+
+  // Send the email notification
+  try {
+    const response = await fetch("/api/enquiry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(enquiry),
+    });
+
+    if (!response.ok) {
+      console.error("Email notification failed");
+    }
+  } catch (emailError) {
+    console.error("Email notification error:", emailError);
+  }
+
+  form.reset();
+  setSuccess(true);
+  setSubmitting(false);
+}
   return (
     <main className="min-h-screen bg-[#050A13] text-white">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6">
@@ -405,7 +468,7 @@ export default function Home() {
       </div>
 
       <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           
           <div className="grid gap-6 sm:grid-cols-2">
             <div>
@@ -420,6 +483,7 @@ export default function Home() {
                 id="name"
                 name="name"
                 type="text"
+                required
                 placeholder="Your name"
                 className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
               />
@@ -455,6 +519,7 @@ export default function Home() {
               id="email"
               name="email"
               type="email"
+              required
               placeholder="you@business.co.uk"
               className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
             />
@@ -490,17 +555,30 @@ export default function Home() {
               id="problem"
               name="problem"
               rows={6}
+              required
               placeholder="Tell us what you're currently doing, what's taking too much time, or what you'd like to improve..."
               className="w-full resize-none rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
             />
           </div>
 
           <button
-            type="submit"
-            className="w-full rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500"
-          >
-            Tell us your problem →
-          </button>
+  type="submit"
+  disabled={submitting}
+  className="w-full rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {submitting ? "Sending..." : "Tell us your problem →"}
+</button>
+{success && (
+  <p className="text-sm text-emerald-400">
+    Thanks — your enquiry has been sent successfully.
+  </p>
+)}
+
+{errorMessage && (
+  <p className="text-sm text-red-400">
+    {errorMessage}
+  </p>
+)}
         </form>
       </div>
 
