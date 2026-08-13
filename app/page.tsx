@@ -358,9 +358,9 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       slowing the business down and we&apos;ll work out a simpler way to do it.
     </p>
 
-    <div className="mt-16 grid gap-10 md:grid-cols-4 md:gap-6">
+    <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-4 md:gap-6">
       <div className="relative">
-        <div className="mb-6 flex items-center">
+        <div className="mb-4 flex items-center md:mb-6">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
             01
           </span>
@@ -379,7 +379,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       </div>
 
       <div className="relative">
-        <div className="mb-6 flex items-center">
+        <div className="mb-4 flex items-center md:mb-6">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
             02
           </span>
@@ -398,7 +398,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       </div>
 
       <div className="relative">
-        <div className="mb-6 flex items-center">
+        <div className="mb-4 flex items-center md:mb-6">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
             03
           </span>
@@ -417,7 +417,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       </div>
 
       <div className="relative">
-        <div className="mb-6 flex items-center">
+        <div className="mb-4 flex items-center md:mb-6">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
             04
           </span>
@@ -428,7 +428,8 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </h3>
 
         <p className="mt-3 leading-7 text-slate-400">
-          As your business changes, we can continue to evolve your software through ongoing support, updates and new features.
+          As your business changes, we can continue to evolve your software
+          through ongoing support, updates and new features.
         </p>
       </div>
     </div>
