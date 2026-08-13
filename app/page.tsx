@@ -136,8 +136,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     </h2>
 
     <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-      Spreadsheets, paperwork and disconnected tools can get a business
-      started. They shouldn&apos;t hold it back.
+      Spreadsheets, paperwork and disconnected tools can get a business started — but they shouldn&apos;t hold it back.
     </p>
 
     <div className="mt-16 grid gap-5 md:grid-cols-3">
@@ -171,7 +170,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         <span className="text-sm font-medium text-blue-500">03</span>
 
         <h3 className="mt-6 text-xl font-semibold">
-          Processes that don&apos;t scale
+          Outgrown processes
         </h3>
 
         <p className="mt-3 leading-7 text-slate-400">
