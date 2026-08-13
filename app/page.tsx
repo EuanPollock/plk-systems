@@ -206,7 +206,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         <span className="text-sm font-medium text-blue-500">01</span>
 
         <h3 className="mt-8 text-2xl font-semibold">
-          Business Systems
+          Custom Business Systems
         </h3>
 
         <p className="mt-4 max-w-md leading-7 text-slate-400">
@@ -271,7 +271,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     </h2>
 
     <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-      A look at some of the systems designed and developed by PLK Systems.
+      Real software, designed, built and deployed by PLK Systems.
     </p>
 
     <div className="mt-16 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
@@ -294,9 +294,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
           </h3>
 
           <p className="mt-5 leading-7 text-slate-400">
-            A custom-built season-long prediction platform where players can
-            create accounts, predict Premier League matches and compete on a
-            live leaderboard.
+            A custom-built football prediction platform with secure user accounts, automated scoring, live league standings and full administration controls.
           </p>
 
           <div className="mt-8 grid gap-3 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-1">
@@ -310,7 +308,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
           <div className="mt-10">
             <span className="inline-flex rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-300">
-              PLK Systems Project
+              Built by PLK Systems
             </span>
           </div>
         </div>
@@ -430,8 +428,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </h3>
 
         <p className="mt-3 leading-7 text-slate-400">
-          As your business changes, the software can evolve with it through
-          support, updates and new features.
+          As your business changes, we can continue to evolve your software through ongoing support, updates and new features.
         </p>
       </div>
     </div>
@@ -455,7 +452,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
         <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
           Tell us what&apos;s taking too much time, creating unnecessary admin
-          or simply not working the way it should. We&apos;ll help you work out
+          or simply not working the way it should. We&apos;ll work out
           whether software can make it simpler.
         </p>
 
@@ -585,22 +582,30 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 </section>
 <footer className="border-t border-white/10">
   <div className="mx-auto max-w-6xl px-6 py-10">
-    <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-      
-      <div className="flex items-center gap-4">
-        <Image
-          src="/plk-logo.png"
-          alt="PLK Systems"
-          width={110}
-          height={45}
-          className="h-auto w-[90px]"
-        />
+    <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div className="flex items-center gap-4">
+          <Image
+            src="/plk-logo.png"
+            alt="PLK Systems"
+            width={110}
+            height={45}
+            className="h-auto w-[90px]"
+          />
 
-        <div className="h-8 w-px bg-white/10" />
+          <div className="h-8 w-px bg-white/10" />
 
-        <p className="text-sm text-slate-500">
-          Software built around your business.
-        </p>
+          <p className="text-sm text-slate-500">
+            Software built around your business.
+          </p>
+        </div>
+
+        <a
+          href="mailto:contact@plksystems.co.uk"
+          className="mt-5 inline-block text-sm text-slate-400 transition hover:text-white"
+        >
+          contact@plksystems.co.uk
+        </a>
       </div>
 
       <div className="flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-400">
@@ -619,14 +624,22 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         <a href="#contact" className="transition hover:text-white">
           Contact
         </a>
+
+        <a href="/privacy" className="transition hover:text-white">
+          Privacy
+        </a>
       </div>
     </div>
 
-    <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-      <p>© 2026 PLK Systems. All rights reserved.</p>
+    <div className="mt-8 border-t border-white/10 pt-6">
+      <div className="flex flex-col gap-3 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+        <p>© 2026 PLK Systems. All rights reserved.</p>
 
-      <p>
-        Built by PLK Systems
+        <p>Built by PLK Systems</p>
+      </div>
+
+      <p className="mt-4 text-xs leading-5 text-slate-700">
+        PLK Systems is a trading name operated in the United Kingdom.
       </p>
     </div>
   </div>
