@@ -325,7 +325,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
             />
           </div>
 
-          <div className="absolute bottom-0 right-0 w-[54%] ... overflow-hidden rounded-xl border border-white/10 bg-[#050A13] shadow-2xl">
+          <div className="absolute bottom-4 right-0 w-[54%] ... overflow-hidden rounded-xl border border-white/10 bg-[#050A13] shadow-2xl">
             <Image
               src="/premier-picks-login.png"
               alt="Premier Picks login screen"
