@@ -202,23 +202,23 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
     <div className="mt-16 grid gap-5 md:grid-cols-2">
       
-      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
+      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
         <span className="text-sm font-medium text-blue-500">01</span>
 
-        <h3 className="mt-8 text-2xl font-semibold">
+        <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
           Custom Business Systems
         </h3>
-
+        
         <p className="mt-4 max-w-md leading-7 text-slate-400">
           Custom software designed around your existing processes, giving your
           team one simple place to manage the work that matters.
         </p>
       </div>
 
-      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
+      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
         <span className="text-sm font-medium text-blue-500">02</span>
 
-        <h3 className="mt-8 text-2xl font-semibold">
+        <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
           Workflow Automation
         </h3>
 
@@ -228,10 +228,10 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </p>
       </div>
 
-      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
+      <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
         <span className="text-sm font-medium text-blue-500">03</span>
 
-        <h3 className="mt-8 text-2xl font-semibold">
+        <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
           Portals & Dashboards
         </h3>
 
@@ -244,7 +244,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05]">
         <span className="text-sm font-medium text-blue-500">04</span>
 
-        <h3 className="mt-8 text-2xl font-semibold">
+        <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
           Booking & Management
         </h3>
 
