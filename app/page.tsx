@@ -92,7 +92,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   </nav>
 </header>
 
-<section className="flex flex-1 flex-col items-center justify-center py-12 text-center sm:py-20 md:py-24">
+<section className="flex flex-1 flex-col items-center justify-start pt-20 pb-12 text-center sm:justify-center sm:py-20 md:py-24">
   <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500 sm:mb-5">
     PLK Systems
   </p>
