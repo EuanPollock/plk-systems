@@ -73,7 +73,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   width={180}
   height={75}
   priority
-  className="h-18 w-auto object-contain"
+  className="h-20 w-auto object-contain"
 />
 
           <nav className="hidden gap-8 text-sm text-slate-300 md:flex">
