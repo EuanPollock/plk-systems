@@ -313,7 +313,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
           </div>
         </div>
 
-        <div className="relative min-h-[380px] lg:min-h-[520px]">
+        <div className="relative min-h-[250px] sm:min-h-[320px] lg:min-h-[520px]">
           
           <div className="absolute left-0 top-0 w-[96%] ... overflow-hidden rounded-xl border border-white/10 bg-[#050A13] shadow-2xl">
             <Image
