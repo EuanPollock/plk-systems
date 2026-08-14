@@ -13,8 +13,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PLK Systems",
-  description: "Software built around your business.",
+  metadataBase: new URL("https://plksystems.co.uk"),
+
+  title: "PLK Systems | Websites, Systems & Automation",
+
+  description:
+    "Modern websites, custom business systems and workflow automation built around your business.",
+
+  openGraph: {
+    title: "PLK Systems | Websites, Systems & Automation",
+    description:
+      "Modern websites, custom business systems and workflow automation built around your business.",
+    url: "https://plksystems.co.uk",
+    siteName: "PLK Systems",
+    images: [
+      {
+        url: "/plk-logo.png",
+        alt: "PLK Systems",
+      },
+    ],
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "PLK Systems | Websites, Systems & Automation",
+    description:
+      "Modern websites, custom business systems and workflow automation built around your business.",
+    images: ["/plk-logo.png"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
