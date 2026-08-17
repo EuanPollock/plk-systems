@@ -4,10 +4,41 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
+const horizonScreens = [
+  {
+    title: "Dashboard",
+    src: "/horizon/horizon-dashboard.png",
+  },
+  {
+    title: "Jobs",
+    src: "/horizon/horizon-jobs.png",
+  },
+  {
+    title: "Customers",
+    src: "/horizon/horizon-customers.png",
+  },
+  {
+    title: "Schedule",
+    src: "/horizon/horizon-schedule.png",
+  },
+  {
+    title: "Quotes",
+    src: "/horizon/horizon-quotes.png",
+  },
+  {
+    title: "Invoices",
+    src: "/horizon/horizon-invoices.png",
+  },
+  {
+    title: "Reports",
+    src: "/horizon/horizon-reports.png",
+  },
+];
 export default function Home() {
   const [submitting, setSubmitting] = useState(false);
 const [success, setSuccess] = useState(false);
 const [errorMessage, setErrorMessage] = useState("");
+const [horizonScreen, setHorizonScreen] = useState(0);
 async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
   event.preventDefault();
 
@@ -390,7 +421,120 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
             Systems.
           </p>
 
-          <div className="mt-16 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+{/* HORIZON OPERATIONS */}
+<div className="mt-16 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+  <div className="grid gap-10 p-6 sm:p-8 lg:grid-cols-[0.75fr_1.25fr] lg:p-12">
+
+    {/* LEFT CONTENT */}
+    <div className="flex flex-col justify-center">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-500">
+          Horizon Operations
+        </span>
+
+        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
+          Concept System
+        </span>
+      </div>
+
+      <h3 className="mt-6 text-3xl font-semibold tracking-tight">
+        A complete business operations platform.
+      </h3>
+
+      <p className="mt-5 leading-7 text-slate-400">
+        A demonstration of how PLK Systems can bring customers, jobs,
+        scheduling, quotes, invoicing, staff and reporting together in one
+        purpose-built system.
+      </p>
+
+      <div className="mt-8 grid gap-3 text-sm text-slate-300">
+        <p>✓ Job management</p>
+        <p>✓ Customer database</p>
+        <p>✓ Team scheduling</p>
+        <p>✓ Quotes & invoices</p>
+        <p>✓ Business reporting</p>
+        <p>✓ Operational dashboard</p>
+      </div>
+
+      <div className="mt-10">
+        <span className="inline-flex rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-300">
+          Demonstration system by PLK Systems
+        </span>
+      </div>
+    </div>
+
+    {/* SCREENSHOT CAROUSEL */}
+    <div className="flex flex-col justify-center">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#08111f] shadow-2xl">
+        <Image
+          src={horizonScreens[horizonScreen].src}
+          alt={`Horizon Operations ${horizonScreens[horizonScreen].title}`}
+          width={1600}
+          height={900}
+          className="h-auto w-full"
+        />
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-4">
+        <button
+          type="button"
+          onClick={() =>
+            setHorizonScreen((current) =>
+              current === 0
+                ? horizonScreens.length - 1
+                : current - 1
+            )
+          }
+          className="shrink-0 rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+        >
+          ← Previous
+        </button>
+
+        <div className="min-w-0 flex-1 text-center">
+          <p className="text-sm font-semibold text-white">
+            {horizonScreens[horizonScreen].title}
+          </p>
+
+          <div className="mt-2 flex justify-center gap-2">
+            {horizonScreens.map((screen, index) => (
+              <button
+                type="button"
+                key={screen.title}
+                onClick={() => setHorizonScreen(index)}
+                aria-label={`Show ${screen.title}`}
+                className={`h-2 rounded-full transition-all ${
+                  horizonScreen === index
+                    ? "w-6 bg-blue-500"
+                    : "w-2 bg-slate-700 hover:bg-slate-500"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            setHorizonScreen((current) =>
+              current === horizonScreens.length - 1
+                ? 0
+                : current + 1
+            )
+          }
+          className="shrink-0 rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+        >
+          Next →
+        </button>
+      </div>
+
+      <p className="mt-4 text-center text-xs text-slate-500">
+        {horizonScreen + 1} of {horizonScreens.length}
+      </p>
+    </div>
+
+  </div>
+</div>
+          <div className="mt-8 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
             <div className="grid gap-12 p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr] lg:p-12">
 
               <div className="flex flex-col justify-center">
