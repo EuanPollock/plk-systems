@@ -491,26 +491,30 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </button>
 
         <div className="min-w-0 flex-1 text-center">
-          <p className="text-sm font-semibold text-white">
-            {horizonScreens[horizonScreen].title}
-          </p>
+  <p className="text-sm font-semibold text-white">
+    {horizonScreens[horizonScreen].title}
+  </p>
 
-          <div className="mt-2 flex justify-center gap-2">
-            {horizonScreens.map((screen, index) => (
-              <button
-                type="button"
-                key={screen.title}
-                onClick={() => setHorizonScreen(index)}
-                aria-label={`Show ${screen.title}`}
-                className={`h-2 rounded-full transition-all ${
-                  horizonScreen === index
-                    ? "w-6 bg-blue-500"
-                    : "w-2 bg-slate-700 hover:bg-slate-500"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+  <div className="mt-2 flex justify-center gap-2">
+    {horizonScreens.map((screen, index) => (
+      <button
+        type="button"
+        key={screen.title}
+        onClick={() => setHorizonScreen(index)}
+        aria-label={`Show ${screen.title}`}
+        className={`h-2 rounded-full transition-all ${
+          horizonScreen === index
+            ? "w-6 bg-blue-500"
+            : "w-2 bg-slate-700 hover:bg-slate-500"
+        }`}
+      />
+    ))}
+  </div>
+
+  <p className="mt-2 text-xs text-slate-500">
+    {horizonScreen + 1} of {horizonScreens.length}
+  </p>
+</div>
 
         <button
           type="button"
