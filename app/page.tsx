@@ -465,15 +465,15 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
     {/* SCREENSHOT CAROUSEL */}
     <div className="flex flex-col justify-center">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#08111f] shadow-2xl">
-        <Image
-          src={horizonScreens[horizonScreen].src}
-          alt={`Horizon Operations ${horizonScreens[horizonScreen].title}`}
-          width={1600}
-          height={900}
-          className="h-auto w-full"
-        />
-      </div>
+      <div className="flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#08111f] p-3 shadow-2xl">
+  <Image
+    src={horizonScreens[horizonScreen].src}
+    alt={`Horizon Operations ${horizonScreens[horizonScreen].title}`}
+    width={1600}
+    height={1000}
+    className="h-full w-full object-contain"
+  />
+</div>
 
       <div className="mt-5 flex items-center justify-between gap-4">
         <button
