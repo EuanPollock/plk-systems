@@ -531,9 +531,6 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </button>
       </div>
 
-      <p className="mt-4 text-center text-xs text-slate-500">
-        {horizonScreen + 1} of {horizonScreens.length}
-      </p>
     </div>
 
   </div>
