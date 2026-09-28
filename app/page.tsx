@@ -1,744 +1,438 @@
-
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-const horizonScreens = [
-  {
-    title: "Dashboard",
-    src: "/horizon/horizon-dashboard.png",
-  },
-  {
-    title: "Jobs",
-    src: "/horizon/horizon-jobs.png",
-  },
-  {
-    title: "Customers",
-    src: "/horizon/horizon-customers.png",
-  },
-  {
-    title: "Schedule",
-    src: "/horizon/horizon-schedule.png",
-  },
-  {
-    title: "Quotes",
-    src: "/horizon/horizon-quotes.png",
-  },
-  {
-    title: "Invoices",
-    src: "/horizon/horizon-invoices.png",
-  },
-  {
-    title: "Reports",
-    src: "/horizon/horizon-reports.png",
-  },
-];
+
+import { supabase } from "@/lib/supabase";
+
+import Hero from "@/components/home/hero";
+import ConnectedSystem from "@/components/home/connected-system";
+import Capabilities from "@/components/home/capabilities";
+import Statement from "@/components/home/statement";
+import HorizonShowcase from "@/components/home/horizon-showcase";
+import PremierPicksShowcase from "@/components/home/premier-picks-showcase";
+import AscentShowcase from "@/components/home/ascent-showcase";
+import SystemBuilder from "@/components/home/system-builder";
+import Process from "@/components/home/process";
+
 export default function Home() {
   const [submitting, setSubmitting] = useState(false);
-const [success, setSuccess] = useState(false);
-const [errorMessage, setErrorMessage] = useState("");
-const [horizonScreen, setHorizonScreen] = useState(0);
-async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
+  const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [projectMessage, setProjectMessage] = useState("");
 
-  setSubmitting(true);
-  setSuccess(false);
-  setErrorMessage("");
+  // ================================================================
+  // RECEIVE SYSTEM BUILDER SELECTIONS
+  // ================================================================
 
-  const form = event.currentTarget;
-  const formData = new FormData(form);
+  useEffect(() => {
+    const handleSystemBuilder = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        message?: string;
+        buildType?: string;
+        features?: string[];
+        audience?: string;
+      }>;
 
-  const enquiry = {
-    name: String(formData.get("name") || ""),
-    business_name: String(formData.get("business") || ""),
-    email: String(formData.get("email") || ""),
-    phone: String(formData.get("phone") || ""),
-    problem: String(formData.get("problem") || ""),
-  };
+      const detail = customEvent.detail;
 
-  // Save the enquiry to Supabase
-  const { error } = await supabase.from("enquiries").insert({
-    name: enquiry.name,
-    business_name: enquiry.business_name || null,
-    email: enquiry.email,
-    phone: enquiry.phone || null,
-    problem: enquiry.problem,
-  });
+      if (!detail) return;
 
-  if (error) {
-    console.error("Supabase error:", error);
-    setErrorMessage("Something went wrong. Please try again.");
-    setSubmitting(false);
-    return;
-  }
+      const lines = [
+        detail.buildType
+          ? `Project type: ${detail.buildType}`
+          : "",
+        detail.features?.length
+          ? `Features: ${detail.features.join(", ")}`
+          : "",
+        detail.audience
+          ? `Users: ${detail.audience}`
+          : "",
+      ].filter(Boolean);
 
-  // Send the email notification
-  try {
-    const response = await fetch("/api/enquiry", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(enquiry),
-    });
+      setProjectMessage(
+        `${lines.join("\n")}\n\nTell us anything else about the project...`
+      );
 
-    if (!response.ok) {
-      console.error("Email notification failed");
+      setSuccess(false);
+      setErrorMessage("");
+    };
+
+    window.addEventListener(
+      "plk-system-builder",
+      handleSystemBuilder as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "plk-system-builder",
+        handleSystemBuilder as EventListener
+      );
+    };
+  }, []);
+
+  // ================================================================
+  // ENQUIRY SUBMISSION
+  // ================================================================
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    setSubmitting(true);
+    setSuccess(false);
+    setErrorMessage("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const enquiry = {
+      name: String(formData.get("name") || ""),
+      business_name: String(
+        formData.get("business") || ""
+      ),
+      email: String(formData.get("email") || ""),
+      phone: String(formData.get("phone") || ""),
+      problem: String(formData.get("problem") || ""),
+    };
+
+    // Save to Supabase
+    const { error } = await supabase
+      .from("enquiries")
+      .insert({
+        name: enquiry.name,
+        business_name:
+          enquiry.business_name || null,
+        email: enquiry.email,
+        phone: enquiry.phone || null,
+        problem: enquiry.problem,
+      });
+
+    if (error) {
+      console.error("Supabase error:", error);
+
+      setErrorMessage(
+        "Something went wrong. Please try again."
+      );
+
+      setSubmitting(false);
+
+      return;
     }
-  } catch (emailError) {
-    console.error("Email notification error:", emailError);
+
+    // Send email notification
+    try {
+      const response = await fetch("/api/enquiry", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(enquiry),
+      });
+
+      if (!response.ok) {
+        console.error(
+          "Email notification failed"
+        );
+      }
+    } catch (emailError) {
+      console.error(
+        "Email notification error:",
+        emailError
+      );
+    }
+
+    form.reset();
+
+    setProjectMessage("");
+    setSuccess(true);
+    setSubmitting(false);
   }
 
-  form.reset();
-  setSuccess(true);
-  setSubmitting(false);
-}
   return (
-  <main className="min-h-screen bg-[#050A13] text-white">
-    <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6">
+    <main className="min-h-screen overflow-hidden bg-[#050a13] text-white">
 
-      {/* HEADER */}
-      <header className="flex items-center justify-between py-4 sm:py-6">
-        <Image
-          src="/plk-logo.png"
-          alt="PLK Systems"
-          width={180}
-          height={75}
-          priority
-          className="h-16 w-auto object-contain sm:h-20"
-        />
+      {/* ========================================================== */}
+      {/* HEADER                                                     */}
+      {/* ========================================================== */}
 
-        <nav className="hidden gap-8 text-sm text-slate-300 md:flex">
-          <a href="#services" className="transition hover:text-white">
-            Services
+      <header className="relative z-50 border-b border-white/[0.06] bg-[#050a13]/80 backdrop-blur-xl">
+
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
+
+          {/* LOGO */}
+
+          <a
+            href="#"
+            aria-label="PLK Systems home"
+            className="relative z-10"
+          >
+            <Image
+              src="/plk-logo.png"
+              alt="PLK Systems"
+              width={180}
+              height={75}
+              priority
+              className="h-14 w-auto object-contain sm:h-16"
+            />
           </a>
 
-          <a href="#work" className="transition hover:text-white">
-            Our Work
-          </a>
+          {/* NAVIGATION */}
 
-          <a href="#process" className="transition hover:text-white">
-            How It Works
-          </a>
+          <nav className="hidden items-center gap-8 md:flex">
 
-          <a href="#contact" className="transition hover:text-white">
-            Contact
-          </a>
-        </nav>
-      </header>
+            <a
+              href="#services"
+              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
+            >
+              Services
+            </a>
 
-      {/* HERO */}
-      <section className="flex flex-1 flex-col items-center justify-start pb-12 pt-20 text-center sm:justify-center sm:py-20 md:py-24">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500 sm:mb-5">
-          PLK Systems
-        </p>
+            <a
+              href="#work"
+              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
+            >
+              Work
+            </a>
 
-        <h1 className="max-w-5xl text-4xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
-          Digital solutions built around
-          <span className="block">your business.</span>
-        </h1>
+            <a
+              href="#process"
+              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
+            >
+              Process
+            </a>
 
-        <p className="mt-6 max-w-3xl text-base leading-7 text-slate-400 sm:mt-8 sm:text-lg sm:leading-8">
-          We design modern websites, build custom business systems and automate
-          repetitive processes — helping businesses work smarter and present
-          themselves better online.
-        </p>
+            <a
+              href="#contact"
+              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
+            >
+              Contact
+            </a>
 
-        <div className="mt-8 flex w-full max-w-md flex-col gap-4 sm:mt-10 sm:w-auto sm:max-w-none sm:flex-row">
+          </nav>
+
+          {/* HEADER CTA */}
+
           <a
             href="#contact"
-            className="rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 sm:py-3"
+            className="group hidden items-center gap-3 rounded-full border border-white/[0.1] bg-white/[0.04] px-5 py-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-white transition hover:border-white/20 hover:bg-white/[0.07] sm:flex"
           >
-            Discuss your project →
+            Start a project
+
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
           </a>
 
-          <a
-            href="#services"
-            className="rounded-xl border border-slate-700 px-6 py-4 font-medium text-slate-200 transition hover:border-slate-500 sm:py-3"
-          >
-            Explore our services
-          </a>
         </div>
-      </section>
 
-      {/* CORE SERVICES */}
-      <section
-        id="services"
-        className="border-t border-white/10 py-24 sm:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-            What we do
-          </p>
+      </header>
 
-          <h2 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-            Websites. Systems.
-            <span className="block">Automation.</span>
-          </h2>
+      {/* ========================================================== */}
+      {/* NEW HOMEPAGE                                               */}
+      {/* ========================================================== */}
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            From a professional online presence to software that runs your
-            day-to-day operations, we build practical digital solutions around
-            what your business actually needs.
-          </p>
-
-          <div className="mt-16 grid gap-5 lg:grid-cols-3">
-
-            {/* WEBSITE */}
-            <div className="group rounded-3xl border border-blue-500/30 bg-blue-500/[0.05] p-7 transition duration-300 hover:border-blue-500/60 sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                01
-              </span>
-
-              <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
-                Website Design & Development
-              </h3>
-
-              <p className="mt-4 leading-7 text-slate-400">
-                Modern, fast and responsive websites designed to represent your
-                business professionally and turn visitors into enquiries.
-              </p>
-
-              <div className="mt-7 space-y-3 text-sm text-slate-300">
-                <p>✓ Business websites</p>
-                <p>✓ Website redesigns</p>
-                <p>✓ Mobile-first development</p>
-                <p>✓ Enquiry & contact forms</p>
-                <p>✓ Hosting & deployment</p>
-              </div>
-            </div>
-
-            {/* SYSTEMS */}
-            <div className="group rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05] sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                02
-              </span>
-
-              <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
-                Custom Business Systems
-              </h3>
-
-              <p className="mt-4 leading-7 text-slate-400">
-                Purpose-built software that replaces spreadsheets, paperwork
-                and disconnected tools with one simpler way of working.
-              </p>
-
-              <div className="mt-7 space-y-3 text-sm text-slate-300">
-                <p>✓ Management systems</p>
-                <p>✓ Dashboards & portals</p>
-                <p>✓ Booking systems</p>
-                <p>✓ Customer & staff tools</p>
-                <p>✓ Secure user accounts</p>
-              </div>
-            </div>
-
-            {/* AUTOMATION */}
-            <div className="group rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:border-blue-500/40 hover:bg-white/[0.05] sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                03
-              </span>
-
-              <h3 className="mt-6 text-2xl font-semibold sm:mt-8">
-                Workflow Automation
-              </h3>
-
-              <p className="mt-4 leading-7 text-slate-400">
-                Reduce repetitive administration, manual calculations and
-                duplicate data entry by letting software handle routine work.
-              </p>
-
-              <div className="mt-7 space-y-3 text-sm text-slate-300">
-                <p>✓ Automated emails</p>
-                <p>✓ Data processing</p>
-                <p>✓ Repetitive admin</p>
-                <p>✓ Calculations & reporting</p>
-                <p>✓ Connected workflows</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* PROBLEM */}
-      <section
-        id="problem"
-        className="border-t border-white/10 py-24 sm:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-            Why PLK Systems
-          </p>
-
-          <h2 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-            Your digital setup should
-            <span className="block">help your business move forward.</span>
-          </h2>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            Whether your website no longer represents the business or your
-            internal processes are becoming difficult to manage, we help turn
-            the problem into something simpler.
-          </p>
-
-          <div className="mt-16 grid gap-4 sm:gap-6 md:grid-cols-3">
-
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                01
-              </span>
-
-              <h3 className="mt-6 text-xl font-semibold">
-                Outdated online presence
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                A slow, dated or difficult-to-use website can undermine an
-                otherwise professional business.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                02
-              </span>
-
-              <h3 className="mt-6 text-xl font-semibold">
-                Repetitive admin
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                Hours spent copying information, calculating figures, sending
-                updates and completing the same tasks repeatedly.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-              <span className="text-sm font-medium text-blue-500">
-                03
-              </span>
-
-              <h3 className="mt-6 text-xl font-semibold">
-                Disconnected processes
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                Important information spread between spreadsheets, inboxes,
-                paperwork and systems that no longer scale.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* WEBSITE FEATURE */}
-      <section className="border-t border-white/10 py-24 sm:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-
-            <div>
-              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-                Website design & development
-              </p>
-
-              <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                Your website should work as hard as your business does.
-              </h2>
-
-              <p className="mt-6 text-lg leading-8 text-slate-400">
-                We build clean, professional websites that look great on every
-                device, communicate what you do clearly and make it easy for
-                potential customers to take the next step.
-              </p>
-
-              <div className="mt-8 grid gap-4 text-sm text-slate-300 sm:grid-cols-2">
-                <p>✓ Responsive design</p>
-                <p>✓ Fast performance</p>
-                <p>✓ Clear customer journeys</p>
-                <p>✓ Contact & enquiry systems</p>
-                <p>✓ Custom development</p>
-                <p>✓ Launch & ongoing support</p>
-              </div>
-
-              <a
-                href="#contact"
-                className="mt-10 inline-flex rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-500"
-              >
-                Discuss your website →
-              </a>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-10">
-              <div className="rounded-2xl border border-white/10 bg-[#08111f] p-6 sm:p-8">
-                <p className="text-sm font-medium text-blue-400">
-                  Built for your business
-                </p>
-
-                <h3 className="mt-5 text-3xl font-semibold tracking-tight">
-                  Not another generic template.
-                </h3>
-
-                <p className="mt-5 leading-7 text-slate-400">
-                  Your website is designed around your business, customers and
-                  goals — with the flexibility to add booking, customer portals,
-                  automation or other functionality as you grow.
-                </p>
-
-                <div className="mt-8 border-t border-white/10 pt-8">
-                  <p className="text-sm text-slate-500">
-                    Website today.
-                  </p>
-
-                  <p className="mt-2 text-xl font-semibold">
-                    A complete digital system tomorrow.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* WORK */}
-      <section
-        id="work"
-        className="border-t border-white/10 py-24 sm:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-            Built by PLK
-          </p>
-
-          <h2 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-            Work we&apos;ve built.
-          </h2>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            Real digital products, designed, developed and deployed by PLK
-            Systems.
-          </p>
-
-{/* HORIZON OPERATIONS */}
-<div className="mt-16 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
-  <div className="grid gap-10 p-6 sm:p-8 lg:grid-cols-[0.75fr_1.25fr] lg:p-12">
-
-    {/* LEFT CONTENT */}
-    <div className="flex flex-col justify-center">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-500">
-          Horizon Operations
-        </span>
-
-        <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-          Concept System
-        </span>
+      <div id="services">
+        <Hero />
       </div>
 
-      <h3 className="mt-6 text-3xl font-semibold tracking-tight">
-        A complete business operations platform.
-      </h3>
+      <ConnectedSystem />
 
-      <p className="mt-5 leading-7 text-slate-400">
-        A demonstration of how PLK Systems can bring customers, jobs,
-        scheduling, quotes, invoicing, staff and reporting together in one
-        purpose-built system.
-      </p>
+      <Capabilities />
 
-      <div className="mt-8 grid gap-3 text-sm text-slate-300">
-        <p>✓ Job management</p>
-        <p>✓ Customer database</p>
-        <p>✓ Team scheduling</p>
-        <p>✓ Quotes & invoices</p>
-        <p>✓ Business reporting</p>
-        <p>✓ Operational dashboard</p>
+      <Statement />
+
+      <div id="work">
+        <HorizonShowcase />
       </div>
 
-      <div className="mt-10">
-        <span className="inline-flex rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-300">
-          Demonstration system by PLK Systems
-        </span>
-      </div>
-    </div>
+      <PremierPicksShowcase />
 
-    {/* SCREENSHOT CAROUSEL */}
-    <div className="flex flex-col justify-center">
-      <div className="flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#08111f] p-3 shadow-2xl">
-  <Image
-    src={horizonScreens[horizonScreen].src}
-    alt={`Horizon Operations ${horizonScreens[horizonScreen].title}`}
-    width={1600}
-    height={1000}
-    className="h-full w-full object-contain"
-  />
-</div>
+      <AscentShowcase />
 
-      <div className="mt-5 flex items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() =>
-            setHorizonScreen((current) =>
-              current === 0
-                ? horizonScreens.length - 1
-                : current - 1
-            )
-          }
-          className="shrink-0 rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
-        >
-          ← Previous
-        </button>
+      <SystemBuilder />
 
-        <div className="min-w-0 flex-1 text-center">
-  <p className="text-sm font-semibold text-white">
-    {horizonScreens[horizonScreen].title}
-  </p>
-
-  <div className="mt-2 flex justify-center gap-2">
-    {horizonScreens.map((screen, index) => (
-      <button
-        type="button"
-        key={screen.title}
-        onClick={() => setHorizonScreen(index)}
-        aria-label={`Show ${screen.title}`}
-        className={`h-2 rounded-full transition-all ${
-          horizonScreen === index
-            ? "w-6 bg-blue-500"
-            : "w-2 bg-slate-700 hover:bg-slate-500"
-        }`}
-      />
-    ))}
-  </div>
-
-  <p className="mt-2 text-xs text-slate-500">
-    {horizonScreen + 1} of {horizonScreens.length}
-  </p>
-</div>
-
-        <button
-          type="button"
-          onClick={() =>
-            setHorizonScreen((current) =>
-              current === horizonScreens.length - 1
-                ? 0
-                : current + 1
-            )
-          }
-          className="shrink-0 rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
-        >
-          Next →
-        </button>
+      <div id="process">
+        <Process />
       </div>
 
-    </div>
+      {/* ========================================================== */}
+      {/* FINAL CONTACT EXPERIENCE                                   */}
+      {/* ========================================================== */}
 
-  </div>
-</div>
-          <div className="mt-8 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
-            <div className="grid gap-12 p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr] lg:p-12">
-
-              <div className="flex flex-col justify-center">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-500">
-                    Premier Picks
-                  </span>
-
-                  <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
-                    Live Project
-                  </span>
-                </div>
-
-                <h3 className="mt-6 text-3xl font-semibold tracking-tight">
-                  A complete football prediction platform.
-                </h3>
-
-                <p className="mt-5 leading-7 text-slate-400">
-                  A custom-built web platform with secure user accounts,
-                  automated scoring, live league standings and full
-                  administration controls.
-                </p>
-
-                <div className="mt-8 grid gap-3 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-1">
-                  <p>✓ Secure user accounts</p>
-                  <p>✓ Match predictions</p>
-                  <p>✓ Automated scoring</p>
-                  <p>✓ Live leaderboard</p>
-                  <p>✓ Admin controls</p>
-                  <p>✓ Mobile-friendly design</p>
-                </div>
-
-                <div className="mt-10">
-                  <span className="inline-flex rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-300">
-                    Built by PLK Systems
-                  </span>
-                </div>
-              </div>
-
-              <div className="relative min-h-[250px] sm:min-h-[320px] lg:min-h-[520px]">
-                <div className="absolute left-0 top-0 w-[96%] overflow-hidden rounded-xl border border-white/10 bg-[#050A13] shadow-2xl">
-                  <Image
-                    src="/premier-picks-dashboard.png"
-                    alt="Premier Picks prediction dashboard"
-                    width={1600}
-                    height={900}
-                    className="h-auto w-full"
-                  />
-                </div>
-
-                <div className="absolute bottom-4 right-0 w-[54%] overflow-hidden rounded-xl border border-white/10 bg-[#050A13] shadow-2xl">
-                  <Image
-                    src="/premier-picks-login.png"
-                    alt="Premier Picks login screen"
-                    width={1600}
-                    height={900}
-                    className="h-auto w-full"
-                  />
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PROCESS */}
-      <section
-        id="process"
-        className="border-t border-white/10 py-24 sm:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-            How it works
-          </p>
-
-          <h2 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-            From idea to launch.
-          </h2>
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            You don&apos;t need to know what technology you need. Tell us what
-            you want to improve, build or achieve and we&apos;ll work out the
-            right solution.
-          </p>
-
-          <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-4 md:gap-6">
-
-            <div className="relative">
-              <div className="mb-4 flex items-center md:mb-6">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
-                  01
-                </span>
-
-                <div className="ml-4 hidden h-px flex-1 bg-white/10 md:block" />
-              </div>
-
-              <h3 className="text-xl font-semibold">
-                Tell us what you need
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                A new website, a business problem, an inefficient process or
-                simply an idea you want to explore.
-              </p>
-            </div>
-
-            <div className="relative">
-              <div className="mb-4 flex items-center md:mb-6">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
-                  02
-                </span>
-
-                <div className="ml-4 hidden h-px flex-1 bg-white/10 md:block" />
-              </div>
-
-              <h3 className="text-xl font-semibold">
-                We design the solution
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                We work out the best approach and define exactly what needs to
-                be designed and built.
-              </p>
-            </div>
-
-            <div className="relative">
-              <div className="mb-4 flex items-center md:mb-6">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
-                  03
-                </span>
-
-                <div className="ml-4 hidden h-px flex-1 bg-white/10 md:block" />
-              </div>
-
-              <h3 className="text-xl font-semibold">
-                We build & launch
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                Your website or system is developed, tested and deployed ready
-                for real-world use.
-              </p>
-            </div>
-
-            <div className="relative">
-              <div className="mb-4 flex items-center md:mb-6">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-500/40 bg-blue-500/10 text-sm font-semibold text-blue-400">
-                  04
-                </span>
-              </div>
-
-              <h3 className="text-xl font-semibold">
-                We keep supporting it
-              </h3>
-
-              <p className="mt-3 leading-7 text-slate-400">
-                As your business changes, we can continue with hosting,
-                support, updates and new functionality.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT */}
       <section
         id="contact"
-        className="border-t border-white/10 py-20 sm:py-32"
+        className="relative overflow-hidden bg-[#050a13]"
       >
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
 
-            <div className="flex flex-col justify-center">
-              <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
-                Start a conversation
-              </p>
+        {/* BACKGROUND */}
 
-              <h2 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-                Got something you&apos;d like to improve?
-              </h2>
+        <div className="pointer-events-none absolute inset-0">
 
-              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
-                Whether you need a new website, custom software or simply have
-                a process that could work better, tell us about it and
-                we&apos;ll work out the next step.
-              </p>
+          <div className="plk-grid absolute inset-0 opacity-[0.035]" />
 
-              <p className="mt-6 text-sm leading-6 text-slate-500 sm:mt-8">
-                No technical knowledge needed. Just tell us what you&apos;re
-                trying to achieve.
-              </p>
+          <div className="absolute left-[-20%] top-[10%] h-[900px] w-[900px] rounded-full bg-blue-600/[0.05] blur-[220px]" />
+
+          <div className="absolute bottom-[-20%] right-[-15%] h-[800px] w-[800px] rounded-full bg-cyan-400/[0.025] blur-[220px]" />
+
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-32 pt-32 sm:px-10 lg:px-16 lg:pb-44 lg:pt-44">
+
+          {/* TOP LABEL */}
+
+          <div className="flex items-center justify-between border-t border-white/[0.08] pt-7">
+
+            <div className="flex items-center gap-3">
+
+              <span className="h-px w-8 bg-blue-400" />
+
+              <span className="text-[8px] font-semibold uppercase tracking-[0.26em] text-blue-400">
+                Start a project
+              </span>
+
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <span className="hidden text-[7px] font-medium uppercase tracking-[0.2em] text-slate-700 sm:block">
+              PLK Systems
+            </span>
 
-                <div className="grid gap-6 sm:grid-cols-2">
+          </div>
+
+          {/* ====================================================== */}
+          {/* GIANT CTA                                              */}
+          {/* ====================================================== */}
+
+          <div className="mt-20">
+
+            <p className="mb-6 text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-600">
+              Have an idea?
+            </p>
+
+            <h2 className="max-w-[1300px] text-[4.7rem] font-semibold leading-[0.78] tracking-[-0.075em] text-white sm:text-[7rem] lg:text-[10rem] xl:text-[12rem]">
+
+              LET&apos;S
+
+              <span className="block text-slate-700">
+                BUILD IT.
+              </span>
+
+            </h2>
+
+          </div>
+
+          {/* ====================================================== */}
+          {/* CONTACT GRID                                           */}
+          {/* ====================================================== */}
+
+          <div className="mt-24 grid gap-16 border-t border-white/[0.08] pt-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-24">
+
+            {/* LEFT */}
+
+            <div>
+
+              <h3 className="max-w-md text-3xl font-semibold leading-tight tracking-[-0.045em] text-white sm:text-4xl">
+                Start with the
+                <span className="block text-slate-600">
+                  problem.
+                </span>
+              </h3>
+
+              <p className="mt-7 max-w-md text-sm leading-7 text-slate-400">
+                You don&apos;t need a technical specification.
+                Tell us what you&apos;re trying to build,
+                improve or make simpler.
+              </p>
+
+              {/* NOT SURE */}
+
+              <div className="mt-12 border-t border-white/[0.07] pt-8">
+
+                <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
+                  Not sure what you need?
+                </p>
+
+                <p className="mt-4 max-w-sm text-sm leading-7 text-slate-500">
+                  That&apos;s fine. Explain what isn&apos;t
+                  working and we&apos;ll help work out the
+                  right solution.
+                </p>
+
+              </div>
+
+              {/* EMAIL */}
+
+              <div className="mt-10 border-t border-white/[0.07] pt-8">
+
+                <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
+                  Prefer email?
+                </p>
+
+                <a
+                  href="mailto:contact@plksystems.co.uk"
+                  className="group mt-4 inline-flex items-center gap-3 text-sm text-slate-300 transition hover:text-white"
+                >
+                  contact@plksystems.co.uk
+
+                  <span className="text-blue-400 transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
+                </a>
+
+              </div>
+
+            </div>
+
+            {/* ==================================================== */}
+            {/* FORM                                                  */}
+            {/* ==================================================== */}
+
+            <div>
+
+              <div className="mb-8 flex items-center justify-between">
+
+                <div>
+
+                  <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-blue-400">
+                    Project enquiry
+                  </p>
+
+                  <p className="mt-2 text-sm text-slate-600">
+                    Tell us a little about what you&apos;re
+                    looking to do.
+                  </p>
+
+                </div>
+
+                <div className="hidden items-center gap-2 sm:flex">
+
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+
+                  <span className="text-[7px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+                    Enquiries open
+                  </span>
+
+                </div>
+
+              </div>
+
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-8"
+              >
+
+                {/* NAME + BUSINESS */}
+
+                <div className="grid gap-8 sm:grid-cols-2">
+
                   <div>
+
                     <label
                       htmlFor="name"
-                      className="mb-2 block text-sm font-medium text-slate-300"
+                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
                     >
                       Your name
                     </label>
@@ -749,16 +443,18 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
                       type="text"
                       required
                       placeholder="Your name"
-                      className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
+                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
                     />
+
                   </div>
 
                   <div>
+
                     <label
                       htmlFor="business"
-                      className="mb-2 block text-sm font-medium text-slate-300"
+                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
                     >
-                      Business name
+                      Business
                     </label>
 
                     <input
@@ -766,53 +462,73 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
                       name="business"
                       type="text"
                       placeholder="Business name"
-                      className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
+                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
                     />
+
                   </div>
+
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block text-sm font-medium text-slate-300"
-                  >
-                    Email address
-                  </label>
+                {/* EMAIL + PHONE */}
 
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="you@business.co.uk"
-                    className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
-                  />
+                <div className="grid gap-8 sm:grid-cols-2">
+
+                  <div>
+
+                    <label
+                      htmlFor="email"
+                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
+                    >
+                      Email
+                    </label>
+
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="you@business.co.uk"
+                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
+                    />
+
+                  </div>
+
+                  <div>
+
+                    <div className="mb-3 flex items-center justify-between">
+
+                      <label
+                        htmlFor="phone"
+                        className="text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
+                      >
+                        Phone
+                      </label>
+
+                      <span className="text-[7px] uppercase tracking-[0.16em] text-slate-800">
+                        Optional
+                      </span>
+
+                    </div>
+
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="07..."
+                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
+                    />
+
+                  </div>
+
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="mb-2 block text-sm font-medium text-slate-300"
-                  >
-                    Phone number
-                    <span className="ml-2 text-slate-600">
-                      Optional
-                    </span>
-                  </label>
-
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="07..."
-                    className="w-full rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
-                  />
-                </div>
+                {/* PROJECT */}
 
                 <div>
+
                   <label
                     htmlFor="problem"
-                    className="mb-2 block text-sm font-medium text-slate-300"
+                    className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
                   >
                     Tell us about your project
                   </label>
@@ -820,129 +536,218 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
                   <textarea
                     id="problem"
                     name="problem"
-                    rows={6}
+                    rows={7}
                     required
-                    placeholder="Tell us what you'd like to build, improve or make simpler..."
-                    className="w-full resize-none rounded-xl border border-white/10 bg-[#08111f] px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-blue-500/70"
+                    value={projectMessage}
+                    onChange={(event) =>
+                      setProjectMessage(
+                        event.target.value
+                      )
+                    }
+                    placeholder="What would you like to build, improve or make simpler?"
+                    className="w-full resize-none border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm leading-7 text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
                   />
+
                 </div>
+
+                {/* SYSTEM BUILDER NOTICE */}
+
+                {projectMessage.startsWith(
+                  "Project type:"
+                ) && (
+                  <div className="flex items-start gap-3 rounded-xl border border-blue-400/[0.12] bg-blue-400/[0.035] px-4 py-4">
+
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+
+                    <div>
+
+                      <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-blue-400">
+                        System configuration added
+                      </p>
+
+                      <p className="mt-2 text-xs leading-5 text-slate-500">
+                        Your selections from Build Your
+                        System have been added to the
+                        enquiry.
+                      </p>
+
+                    </div>
+
+                  </div>
+                )}
+
+                {/* SUBMIT */}
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-xl bg-blue-600 px-6 py-4 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="group flex w-full items-center justify-between bg-white px-6 py-5 text-left transition duration-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60 sm:px-7"
                 >
-                  {submitting
-                    ? "Sending..."
-                    : "Discuss your project →"}
+
+                  <div>
+
+                    <span className="block text-[9px] font-semibold uppercase tracking-[0.18em] text-[#050a13]">
+                      {submitting
+                        ? "Sending enquiry..."
+                        : "Send enquiry"}
+                    </span>
+
+                    {!submitting && (
+                      <span className="mt-1 block text-[8px] text-slate-500">
+                        Let&apos;s talk about your project
+                      </span>
+                    )}
+
+                  </div>
+
+                  {!submitting && (
+                    <span className="text-xl text-[#050a13] transition-transform duration-300 group-hover:translate-x-2">
+                      →
+                    </span>
+                  )}
+
+                  {submitting && (
+                    <span className="h-4 w-4 animate-spin rounded-full border border-[#050a13]/20 border-t-[#050a13]" />
+                  )}
+
                 </button>
 
+                {/* SUCCESS */}
+
                 {success && (
-                  <p className="text-sm text-emerald-400">
-                    Thanks — your enquiry has been sent successfully.
-                  </p>
+                  <div className="flex items-start gap-3 border-t border-emerald-400/20 pt-5">
+
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+
+                    <div>
+
+                      <p className="text-sm font-medium text-emerald-400">
+                        Enquiry sent.
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-600">
+                        Thanks — we&apos;ll be in touch.
+                      </p>
+
+                    </div>
+
+                  </div>
                 )}
 
+                {/* ERROR */}
+
                 {errorMessage && (
-                  <p className="text-sm text-red-400">
-                    {errorMessage}
-                  </p>
+                  <div className="flex items-start gap-3 border-t border-red-400/20 pt-5">
+
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+
+                    <p className="text-sm text-red-400">
+                      {errorMessage}
+                    </p>
+
+                  </div>
                 )}
 
               </form>
+
             </div>
 
           </div>
+
         </div>
+
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10">
-        <div className="mx-auto w-full max-w-6xl py-10">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      {/* ========================================================== */}
+      {/* FOOTER                                                     */}
+      {/* ========================================================== */}
+
+      <footer className="border-t border-white/[0.07] bg-[#050a13]">
+
+        <div className="mx-auto max-w-[1500px] px-6 py-12 sm:px-10 lg:px-16">
+
+          <div className="flex flex-col gap-12 sm:flex-row sm:items-end sm:justify-between">
+
+            {/* BRAND */}
 
             <div>
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/plk-logo.png"
-                  alt="PLK Systems"
-                  width={110}
-                  height={45}
-                  className="h-auto w-[90px]"
-                />
 
-                <div className="h-8 w-px bg-white/10" />
+              <Image
+                src="/plk-logo.png"
+                alt="PLK Systems"
+                width={130}
+                height={55}
+                className="h-auto w-[105px]"
+              />
 
-                <p className="text-sm text-slate-500">
-                  Digital solutions built around your business.
-                </p>
-              </div>
+              <p className="mt-5 max-w-sm text-xs leading-6 text-slate-600">
+                Websites, applications and systems built
+                around your business.
+              </p>
 
-              <a
-                href="mailto:contact@plksystems.co.uk"
-                className="mt-5 inline-block text-sm text-slate-400 transition hover:text-white"
-              >
-                contact@plksystems.co.uk
-              </a>
             </div>
 
-            <div className="flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-400">
+            {/* LINKS */}
+
+            <div className="flex flex-wrap gap-x-7 gap-y-4">
+
               <a
                 href="#services"
-                className="transition hover:text-white"
+                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
               >
                 Services
               </a>
 
               <a
                 href="#work"
-                className="transition hover:text-white"
+                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
               >
-                Our Work
+                Work
               </a>
 
               <a
                 href="#process"
-                className="transition hover:text-white"
+                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
               >
-                How It Works
+                Process
               </a>
 
               <a
                 href="#contact"
-                className="transition hover:text-white"
+                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
               >
                 Contact
               </a>
 
               <a
                 href="/privacy"
-                className="transition hover:text-white"
+                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
               >
                 Privacy
               </a>
-            </div>
-          </div>
 
-          <div className="mt-8 border-t border-white/10 pt-6">
-            <div className="flex flex-col gap-3 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                © 2026 PLK Systems. All rights reserved.
-              </p>
-
-              <p>
-                Built by PLK Systems
-              </p>
             </div>
 
-            <p className="mt-4 text-xs leading-5 text-slate-700">
-              PLK Systems is a trading name operated in the United Kingdom.
-            </p>
           </div>
+
+          {/* BOTTOM */}
+
+          <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-6 text-[8px] uppercase tracking-[0.16em] text-slate-700 sm:flex-row sm:items-center sm:justify-between">
+
+            <span>
+              © {new Date().getFullYear()} PLK Systems
+            </span>
+
+            <span>
+              Software built around your business.
+            </span>
+
+          </div>
+
         </div>
-            </footer>
 
-    </div>
-  </main>
-);
+      </footer>
+
+    </main>
+  );
 }
