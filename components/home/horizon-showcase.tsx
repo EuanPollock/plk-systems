@@ -22,7 +22,13 @@ const reveal = {
   },
 };
 
-export default function HorizonShowcase() {
+type HorizonShowcaseProps = {
+  hideIntro?: boolean;
+};
+
+export default function HorizonShowcase({
+  hideIntro = false,
+}: HorizonShowcaseProps) {
   return (
     <section className="relative overflow-hidden bg-[#050a13]">
 
@@ -41,7 +47,7 @@ export default function HorizonShowcase() {
       {/* ============================================================ */}
       {/* INTRO                                                        */}
       {/* ============================================================ */}
-
+{!hideIntro && (
 <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-28 pt-16 sm:px-10 sm:pt-20 lg:px-16 lg:pb-40 lg:pt-24">        <motion.div {...reveal}>
 
           <div className="mb-8 flex items-center gap-3">
@@ -93,12 +99,12 @@ export default function HorizonShowcase() {
 
           </div>
 
-        </motion.div>
+              </motion.div>
+    </div>
+)}
 
-      </div>
-
-      {/* ============================================================ */}
-      {/* MAIN DASHBOARD                                               */}
+{/* ============================================================ */}
+{/* MAIN DASHBOARD                                               */}
       {/* ============================================================ */}
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-36 sm:px-10 lg:px-16 lg:pb-52">

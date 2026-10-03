@@ -48,9 +48,18 @@ const Phone = ({
   );
 };
 
-export default function AscentShowcase() {
+type AscentShowcaseProps = {
+  hideIntro?: boolean;
+};
+
+export default function AscentShowcase({
+  hideIntro = false,
+}: AscentShowcaseProps) {
   return (
     <section className="relative overflow-hidden bg-[#f1f1ef] text-[#111]">
+
+      {!hideIntro && (
+  <>
 
       {/* ============================================================ */}
       {/* INTRO                                                        */}
@@ -111,12 +120,14 @@ export default function AscentShowcase() {
               ))}
             </div>
           </div>
-        </motion.div>
+              </motion.div>
 
-      </div>
+    </div>
+  </>
+)}
 
-      {/* ============================================================ */}
-      {/* HERO PHONE                                                   */}
+{/* ============================================================ */}
+{/* HERO PHONE                                                   */}
       {/* ============================================================ */}
 
       <div className="relative min-h-[1050px] overflow-hidden bg-[#111] lg:min-h-[1150px]">

@@ -22,7 +22,13 @@ const reveal = {
   },
 };
 
-export default function PremierPicksShowcase() {
+type PremierPicksShowcaseProps = {
+  hideIntro?: boolean;
+};
+
+export default function PremierPicksShowcase({
+  hideIntro = false,
+}: PremierPicksShowcaseProps) {
   return (
     <section className="relative overflow-hidden bg-[#070b12]">
 
@@ -37,6 +43,9 @@ export default function PremierPicksShowcase() {
 
         <div className="absolute right-[-10%] top-[45%] h-[600px] w-[600px] rounded-full bg-cyan-500/[0.025] blur-[200px]" />
       </div>
+
+      {!hideIntro && (
+  <>
 
       {/* ============================================================ */}
       {/* TOP LABEL                                                    */}
@@ -118,12 +127,14 @@ export default function PremierPicksShowcase() {
 
           </div>
 
-        </motion.div>
+              </motion.div>
 
-      </div>
+    </div>
+  </>
+)}
 
-      {/* ============================================================ */}
-      {/* PRODUCT STAGE                                                */}
+{/* ============================================================ */}
+{/* PRODUCT STAGE                                                */}
       {/* ============================================================ */}
 
       <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-40 sm:px-10 lg:px-16 lg:pb-52">

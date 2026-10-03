@@ -1,677 +1,454 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "motion/react";
 
-import { supabase } from "@/lib/supabase";
-
+import SiteHeader from "@/components/site-header";
 import Hero from "@/components/home/hero";
 import ConnectedSystem from "@/components/home/connected-system";
 import Capabilities from "@/components/home/capabilities";
 import Statement from "@/components/home/statement";
-import HorizonShowcase from "@/components/home/horizon-showcase";
-import PremierPicksShowcase from "@/components/home/premier-picks-showcase";
-import AscentShowcase from "@/components/home/ascent-showcase";
+import SelectedWork from "@/components/home/selected-work";
 import SystemBuilder from "@/components/home/system-builder";
 import Process from "@/components/home/process";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const reveal = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: {
+    duration: 0.8,
+    ease,
+  },
+};
+
 export default function Home() {
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [projectMessage, setProjectMessage] = useState("");
-
-  // ================================================================
-  // RECEIVE SYSTEM BUILDER SELECTIONS
-  // ================================================================
-
-  useEffect(() => {
-    const handleSystemBuilder = (event: Event) => {
-      const customEvent = event as CustomEvent<{
-        message?: string;
-        buildType?: string;
-        features?: string[];
-        audience?: string;
-      }>;
-
-      const detail = customEvent.detail;
-
-      if (!detail) return;
-
-      const lines = [
-        detail.buildType
-          ? `Project type: ${detail.buildType}`
-          : "",
-        detail.features?.length
-          ? `Features: ${detail.features.join(", ")}`
-          : "",
-        detail.audience
-          ? `Users: ${detail.audience}`
-          : "",
-      ].filter(Boolean);
-
-      setProjectMessage(
-        `${lines.join("\n")}\n\nTell us anything else about the project...`
-      );
-
-      setSuccess(false);
-      setErrorMessage("");
-    };
-
-    window.addEventListener(
-      "plk-system-builder",
-      handleSystemBuilder as EventListener
-    );
-
-    return () => {
-      window.removeEventListener(
-        "plk-system-builder",
-        handleSystemBuilder as EventListener
-      );
-    };
-  }, []);
-
-  // ================================================================
-  // ENQUIRY SUBMISSION
-  // ================================================================
-
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-
-    setSubmitting(true);
-    setSuccess(false);
-    setErrorMessage("");
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const enquiry = {
-      name: String(formData.get("name") || ""),
-      business_name: String(
-        formData.get("business") || ""
-      ),
-      email: String(formData.get("email") || ""),
-      phone: String(formData.get("phone") || ""),
-      problem: String(formData.get("problem") || ""),
-    };
-
-    // Save to Supabase
-    const { error } = await supabase
-      .from("enquiries")
-      .insert({
-        name: enquiry.name,
-        business_name:
-          enquiry.business_name || null,
-        email: enquiry.email,
-        phone: enquiry.phone || null,
-        problem: enquiry.problem,
-      });
-
-    if (error) {
-      console.error("Supabase error:", error);
-
-      setErrorMessage(
-        "Something went wrong. Please try again."
-      );
-
-      setSubmitting(false);
-
-      return;
-    }
-
-    // Send email notification
-    try {
-      const response = await fetch("/api/enquiry", {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify(enquiry),
-      });
-
-      if (!response.ok) {
-        console.error(
-          "Email notification failed"
-        );
-      }
-    } catch (emailError) {
-      console.error(
-        "Email notification error:",
-        emailError
-      );
-    }
-
-    form.reset();
-
-    setProjectMessage("");
-    setSuccess(true);
-    setSubmitting(false);
-  }
-
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050a13] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050a13] text-white">
+      <SiteHeader />
 
-      {/* ========================================================== */}
-      {/* HEADER                                                     */}
-      {/* ========================================================== */}
+      {/* ====================================================== */}
+      {/* HERO                                                   */}
+      {/* ====================================================== */}
 
-      <header className="relative z-50 border-b border-white/[0.06] bg-[#050a13]/80 backdrop-blur-xl">
+      <section className="relative">
+        <Hero />
 
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
+        {/* transition line */}
+        <div className="pointer-events-none absolute bottom-0 left-1/2 z-20 hidden h-24 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400/40 to-transparent lg:block" />
+      </section>
 
-          {/* LOGO */}
+      {/* ====================================================== */}
+      {/* SIGNAL STRIP                                           */}
+      {/* ====================================================== */}
 
-          <a
-            href="#"
-            aria-label="PLK Systems home"
-            className="relative z-10"
-          >
-            <Image
-              src="/plk-logo.png"
-              alt="PLK Systems"
-              width={180}
-              height={75}
-              priority
-              className="h-14 w-auto object-contain sm:h-16"
+      <section className="relative z-20 border-y border-white/[0.06] bg-[#050a13]">
+        <div className="mx-auto max-w-[1500px] px-6 sm:px-10 lg:px-16">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
+            <Signal
+              number="01"
+              label="Websites"
+              detail="Digital experiences"
             />
-          </a>
 
-          {/* NAVIGATION */}
+            <Signal
+              number="02"
+              label="Mobile Apps"
+              detail="Products in your pocket"
+            />
 
-          <nav className="hidden items-center gap-8 md:flex">
+            <Signal
+              number="03"
+              label="Software"
+              detail="Built around operations"
+            />
 
-            <a
-              href="#services"
-              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
-            >
-              Services
-            </a>
+            <Signal
+              number="04"
+              label="Automation"
+              detail="Less manual work"
+              last
+            />
+          </div>
+        </div>
+      </section>
 
-            <a
-              href="#work"
-              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
-            >
-              Work
-            </a>
+      {/* ====================================================== */}
+      {/* CONNECTED SYSTEM                                       */}
+      {/* ====================================================== */}
 
-            <a
-              href="#process"
-              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
-            >
-              Process
-            </a>
+      <section className="relative">
+        <SectionMarker
+          number="01"
+          label="One connected ecosystem"
+        />
 
-            <a
-              href="#contact"
-              className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500 transition hover:text-white"
-            >
-              Contact
-            </a>
+        <ConnectedSystem />
+      </section>
 
-          </nav>
+      {/* ====================================================== */}
+      {/* BRIDGE                                                 */}
+      {/* ====================================================== */}
 
-          {/* HEADER CTA */}
+      <section className="relative overflow-hidden bg-[#050a13]">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="plk-grid absolute inset-0 opacity-[0.025]" />
 
-          <a
-            href="#contact"
-            className="group hidden items-center gap-3 rounded-full border border-white/[0.1] bg-white/[0.04] px-5 py-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-white transition hover:border-white/20 hover:bg-white/[0.07] sm:flex"
-          >
-            Start a project
-
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
-          </a>
-
+          <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/[0.05] blur-[220px]" />
         </div>
 
-      </header>
+        <div className="relative z-10 mx-auto max-w-[1500px] px-6 py-24 sm:px-10 sm:py-28 lg:px-16 lg:py-36">
+          <motion.div
+            {...reveal}
+            className="grid gap-12 border-y border-white/[0.07] py-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:py-16"
+          >
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-blue-400" />
 
-      {/* ========================================================== */}
-      {/* NEW HOMEPAGE                                               */}
-      {/* ========================================================== */}
+              <span className="text-[8px] font-semibold uppercase tracking-[0.25em] text-blue-400">
+                Different problems
+              </span>
+            </div>
 
-      <div id="services">
-        <Hero />
-      </div>
+            <p className="max-w-3xl text-3xl font-medium leading-[1.08] tracking-[-0.045em] text-slate-300 sm:text-4xl lg:text-5xl">
+              Not every business needs the same thing.
+              <span className="text-slate-700">
+                {" "}
+                That&apos;s exactly the point.
+              </span>
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-      <ConnectedSystem />
+      {/* ====================================================== */}
+      {/* CAPABILITIES                                           */}
+      {/* ====================================================== */}
 
-      <Capabilities />
+      <section className="relative">
+        <SectionMarker
+          number="02"
+          label="Capabilities"
+        />
 
-      <Statement />
+        <Capabilities />
+      </section>
+
+      {/* ====================================================== */}
+      {/* STICKY STATEMENT                                       */}
+      {/* ====================================================== */}
+
+      <section className="relative">
+        <Statement />
+      </section>
+
+      {/* ====================================================== */}
+      {/* SELECTED WORK INTRO                                    */}
+      {/* ====================================================== */}
+
+      <section className="relative overflow-hidden bg-[#050a13]">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="plk-grid absolute inset-0 opacity-[0.02]" />
+
+          <motion.div
+            animate={{
+              x: ["-8%", "8%", "-8%"],
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute left-[15%] top-1/2 h-[450px] w-[700px] -translate-y-1/2 rounded-full bg-blue-500/[0.035] blur-[180px]"
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-10 pt-24 sm:px-10 sm:pt-28 lg:px-16 lg:pt-36">
+          <motion.div
+            {...reveal}
+            className="flex items-end justify-between border-t border-white/[0.07] pt-7"
+          >
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-blue-400" />
+
+              <span className="text-[8px] font-semibold uppercase tracking-[0.25em] text-blue-400">
+                Things we&apos;ve built
+              </span>
+            </div>
+
+            <span className="hidden font-mono text-[8px] uppercase tracking-[0.18em] text-slate-700 sm:block">
+              PLK / Selected work
+            </span>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* SELECTED WORK                                          */}
+      {/* ====================================================== */}
 
       <div id="work">
-        <HorizonShowcase />
+        <SelectedWork />
       </div>
 
-      <PremierPicksShowcase />
+      {/* ====================================================== */}
+      {/* WORK EXIT                                              */}
+      {/* ====================================================== */}
 
-      <AscentShowcase />
+      <section className="relative overflow-hidden bg-[#050a13]">
+        <div className="mx-auto max-w-[1500px] px-6 pb-28 sm:px-10 sm:pb-32 lg:px-16 lg:pb-40">
+          <motion.div
+            {...reveal}
+            className="grid gap-10 border-t border-white/[0.07] pt-10 lg:grid-cols-[1fr_auto] lg:items-center"
+          >
+            <p className="max-w-2xl text-xl leading-8 tracking-[-0.025em] text-slate-500 sm:text-2xl">
+              Different products.
+              <span className="text-white">
+                {" "}
+                Same approach — understand the problem and build
+                around it.
+              </span>
+            </p>
+
+            <Link
+              href="/work"
+              className="group inline-flex items-center gap-5 text-[8px] font-semibold uppercase tracking-[0.22em] text-blue-400"
+            >
+              Explore all work
+
+              <span className="transition-transform duration-300 group-hover:translate-x-2">
+                →
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* SYSTEM BUILDER INTRO                                   */}
+      {/* ====================================================== */}
+
+      <section className="relative overflow-hidden bg-[#050a13]">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute right-[-15%] top-[-40%] h-[700px] w-[700px] rounded-full bg-cyan-400/[0.03] blur-[220px]" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-6 pt-10 sm:px-10 lg:px-16">
+          <motion.div
+            {...reveal}
+            className="grid gap-10 border-t border-white/[0.07] pt-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-end"
+          >
+            <div>
+              <span className="font-mono text-[8px] text-blue-400">
+                03
+              </span>
+
+              <p className="mt-3 text-[8px] font-semibold uppercase tracking-[0.24em] text-slate-600">
+                Make it yours
+              </p>
+            </div>
+
+            <h2 className="text-4xl font-semibold leading-[0.95] tracking-[-0.055em] sm:text-5xl lg:text-6xl">
+              DON&apos;T JUST READ
+              <span className="block text-slate-700">
+                ABOUT IT.
+              </span>
+            </h2>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* SYSTEM BUILDER                                         */}
+      {/* ====================================================== */}
 
       <SystemBuilder />
+
+      {/* ====================================================== */}
+      {/* PROCESS TRANSITION                                     */}
+      {/* ====================================================== */}
+
+      <section className="relative overflow-hidden bg-[#050a13]">
+        <div className="mx-auto max-w-[1500px] px-6 py-24 sm:px-10 sm:py-28 lg:px-16 lg:py-32">
+          <motion.div
+            {...reveal}
+            className="relative overflow-hidden border border-white/[0.08] bg-[#080d15]"
+          >
+            <div className="plk-grid pointer-events-none absolute inset-0 opacity-[0.025]" />
+
+            <div className="relative z-10 grid lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="border-b border-white/[0.07] p-8 sm:p-10 lg:border-b-0 lg:border-r lg:p-12">
+                <span className="font-mono text-[8px] text-blue-400">
+                  04
+                </span>
+
+                <p className="mt-5 text-[8px] font-semibold uppercase tracking-[0.24em] text-slate-600">
+                  The process
+                </p>
+              </div>
+
+              <div className="p-8 sm:p-10 lg:p-12">
+                <p className="max-w-3xl text-3xl font-medium leading-[1.08] tracking-[-0.045em] sm:text-4xl lg:text-5xl">
+                  From the first conversation
+                  <span className="text-slate-700">
+                    {" "}
+                    to something real.
+                  </span>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ====================================================== */}
+      {/* PROCESS                                                */}
+      {/* ====================================================== */}
 
       <div id="process">
         <Process />
       </div>
 
-      {/* ========================================================== */}
-      {/* FINAL CONTACT EXPERIENCE                                   */}
-      {/* ========================================================== */}
+      {/* ====================================================== */}
+      {/* CINEMATIC FINAL CTA                                    */}
+      {/* ====================================================== */}
 
-      <section
-        id="contact"
-        className="relative overflow-hidden bg-[#050a13]"
-      >
-
-        {/* BACKGROUND */}
+      <section className="relative min-h-[92vh] overflow-hidden bg-[#050a13]">
+        {/* atmosphere */}
 
         <div className="pointer-events-none absolute inset-0">
+          <div className="plk-grid absolute inset-0 opacity-[0.03]" />
 
-          <div className="plk-grid absolute inset-0 opacity-[0.035]" />
+          <div className="absolute left-1/2 top-1/2 h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/[0.075] blur-[260px]" />
 
-          <div className="absolute left-[-20%] top-[10%] h-[900px] w-[900px] rounded-full bg-blue-600/[0.05] blur-[220px]" />
+          <motion.div
+            animate={{
+              opacity: [0.2, 0.55, 0.2],
+              scale: [0.95, 1.05, 0.95],
+            }}
+            transition={{
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/[0.08]"
+          />
 
-          <div className="absolute bottom-[-20%] right-[-15%] h-[800px] w-[800px] rounded-full bg-cyan-400/[0.025] blur-[220px]" />
+          <motion.div
+            animate={{
+              rotate: 360,
+            }}
+            transition={{
+              duration: 35,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="absolute left-1/2 top-1/2 h-[650px] w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full border-t border-white/[0.05]"
+          />
 
+          <div className="absolute left-1/2 top-0 h-full w-px bg-white/[0.025]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-[1500px] px-6 pb-32 pt-32 sm:px-10 lg:px-16 lg:pb-44 lg:pt-44">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1500px] flex-col justify-between px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
+          {/* top */}
 
-          {/* TOP LABEL */}
-
-          <div className="flex items-center justify-between border-t border-white/[0.08] pt-7">
-
+          <motion.div
+            {...reveal}
+            className="flex items-center justify-between border-t border-white/[0.08] pt-6"
+          >
             <div className="flex items-center gap-3">
-
               <span className="h-px w-8 bg-blue-400" />
 
               <span className="text-[8px] font-semibold uppercase tracking-[0.26em] text-blue-400">
+                Your turn
+              </span>
+            </div>
+
+            <div className="hidden items-center gap-2 sm:flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.4)]" />
+
+              <span className="text-[7px] font-semibold uppercase tracking-[0.18em] text-slate-700">
+                Enquiries open
+              </span>
+            </div>
+          </motion.div>
+
+          {/* centre */}
+
+          <div className="py-20">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease }}
+              className="mb-8 text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-600"
+            >
+              Have something in mind?
+            </motion.p>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 70 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{
+                duration: 1,
+                ease,
+              }}
+              className="max-w-[1350px] text-[4.5rem] font-semibold leading-[0.78] tracking-[-0.075em] sm:text-[7rem] lg:text-[10rem] xl:text-[11.5rem]"
+            >
+              LET&apos;S BUILD
+              <span className="block text-slate-700">
+                WHAT&apos;S NEXT.
+              </span>
+            </motion.h2>
+          </div>
+
+          {/* bottom */}
+
+          <motion.div
+            {...reveal}
+            className="grid gap-10 border-t border-white/[0.08] pt-9 lg:grid-cols-[1fr_auto] lg:items-end"
+          >
+            <div>
+              <p className="max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
+                A website. An app. An internal system. An idea
+                you&apos;re not quite sure how to build yet.
+              </p>
+
+              <p className="mt-2 text-sm leading-7 text-slate-300 sm:text-base">
+                Start with the problem.
+              </p>
+            </div>
+
+            <Link
+              href="/contact"
+              className="group relative inline-flex min-w-[250px] items-center justify-between overflow-hidden bg-white px-7 py-6 text-[#050a13]"
+            >
+              <span className="absolute inset-0 translate-y-full bg-blue-400 transition-transform duration-500 ease-out group-hover:translate-y-0" />
+
+              <span className="relative z-10 text-[9px] font-semibold uppercase tracking-[0.2em]">
                 Start a project
               </span>
 
-            </div>
-
-            <span className="hidden text-[7px] font-medium uppercase tracking-[0.2em] text-slate-700 sm:block">
-              PLK Systems
-            </span>
-
-          </div>
-
-          {/* ====================================================== */}
-          {/* GIANT CTA                                              */}
-          {/* ====================================================== */}
-
-          <div className="mt-20">
-
-            <p className="mb-6 text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-600">
-              Have an idea?
-            </p>
-
-            <h2 className="max-w-[1300px] text-[4.7rem] font-semibold leading-[0.78] tracking-[-0.075em] text-white sm:text-[7rem] lg:text-[10rem] xl:text-[12rem]">
-
-              LET&apos;S
-
-              <span className="block text-slate-700">
-                BUILD IT.
+              <span className="relative z-10 text-xl transition-transform duration-300 group-hover:translate-x-2">
+                →
               </span>
-
-            </h2>
-
-          </div>
-
-          {/* ====================================================== */}
-          {/* CONTACT GRID                                           */}
-          {/* ====================================================== */}
-
-          <div className="mt-24 grid gap-16 border-t border-white/[0.08] pt-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-24">
-
-            {/* LEFT */}
-
-            <div>
-
-              <h3 className="max-w-md text-3xl font-semibold leading-tight tracking-[-0.045em] text-white sm:text-4xl">
-                Start with the
-                <span className="block text-slate-600">
-                  problem.
-                </span>
-              </h3>
-
-              <p className="mt-7 max-w-md text-sm leading-7 text-slate-400">
-                You don&apos;t need a technical specification.
-                Tell us what you&apos;re trying to build,
-                improve or make simpler.
-              </p>
-
-              {/* NOT SURE */}
-
-              <div className="mt-12 border-t border-white/[0.07] pt-8">
-
-                <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
-                  Not sure what you need?
-                </p>
-
-                <p className="mt-4 max-w-sm text-sm leading-7 text-slate-500">
-                  That&apos;s fine. Explain what isn&apos;t
-                  working and we&apos;ll help work out the
-                  right solution.
-                </p>
-
-              </div>
-
-              {/* EMAIL */}
-
-              <div className="mt-10 border-t border-white/[0.07] pt-8">
-
-                <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
-                  Prefer email?
-                </p>
-
-                <a
-                  href="mailto:contact@plksystems.co.uk"
-                  className="group mt-4 inline-flex items-center gap-3 text-sm text-slate-300 transition hover:text-white"
-                >
-                  contact@plksystems.co.uk
-
-                  <span className="text-blue-400 transition-transform duration-300 group-hover:translate-x-1">
-                    →
-                  </span>
-                </a>
-
-              </div>
-
-            </div>
-
-            {/* ==================================================== */}
-            {/* FORM                                                  */}
-            {/* ==================================================== */}
-
-            <div>
-
-              <div className="mb-8 flex items-center justify-between">
-
-                <div>
-
-                  <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-blue-400">
-                    Project enquiry
-                  </p>
-
-                  <p className="mt-2 text-sm text-slate-600">
-                    Tell us a little about what you&apos;re
-                    looking to do.
-                  </p>
-
-                </div>
-
-                <div className="hidden items-center gap-2 sm:flex">
-
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-
-                  <span className="text-[7px] font-semibold uppercase tracking-[0.18em] text-slate-600">
-                    Enquiries open
-                  </span>
-
-                </div>
-
-              </div>
-
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-8"
-              >
-
-                {/* NAME + BUSINESS */}
-
-                <div className="grid gap-8 sm:grid-cols-2">
-
-                  <div>
-
-                    <label
-                      htmlFor="name"
-                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
-                    >
-                      Your name
-                    </label>
-
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      placeholder="Your name"
-                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <label
-                      htmlFor="business"
-                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
-                    >
-                      Business
-                    </label>
-
-                    <input
-                      id="business"
-                      name="business"
-                      type="text"
-                      placeholder="Business name"
-                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
-                    />
-
-                  </div>
-
-                </div>
-
-                {/* EMAIL + PHONE */}
-
-                <div className="grid gap-8 sm:grid-cols-2">
-
-                  <div>
-
-                    <label
-                      htmlFor="email"
-                      className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
-                    >
-                      Email
-                    </label>
-
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="you@business.co.uk"
-                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <div className="mb-3 flex items-center justify-between">
-
-                      <label
-                        htmlFor="phone"
-                        className="text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
-                      >
-                        Phone
-                      </label>
-
-                      <span className="text-[7px] uppercase tracking-[0.16em] text-slate-800">
-                        Optional
-                      </span>
-
-                    </div>
-
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="07..."
-                      className="w-full border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
-                    />
-
-                  </div>
-
-                </div>
-
-                {/* PROJECT */}
-
-                <div>
-
-                  <label
-                    htmlFor="problem"
-                    className="mb-3 block text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-600"
-                  >
-                    Tell us about your project
-                  </label>
-
-                  <textarea
-                    id="problem"
-                    name="problem"
-                    rows={7}
-                    required
-                    value={projectMessage}
-                    onChange={(event) =>
-                      setProjectMessage(
-                        event.target.value
-                      )
-                    }
-                    placeholder="What would you like to build, improve or make simpler?"
-                    className="w-full resize-none border-0 border-b border-white/[0.12] bg-transparent px-0 py-4 text-sm leading-7 text-white outline-none transition placeholder:text-slate-700 focus:border-blue-400"
-                  />
-
-                </div>
-
-                {/* SYSTEM BUILDER NOTICE */}
-
-                {projectMessage.startsWith(
-                  "Project type:"
-                ) && (
-                  <div className="flex items-start gap-3 rounded-xl border border-blue-400/[0.12] bg-blue-400/[0.035] px-4 py-4">
-
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-
-                    <div>
-
-                      <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-blue-400">
-                        System configuration added
-                      </p>
-
-                      <p className="mt-2 text-xs leading-5 text-slate-500">
-                        Your selections from Build Your
-                        System have been added to the
-                        enquiry.
-                      </p>
-
-                    </div>
-
-                  </div>
-                )}
-
-                {/* SUBMIT */}
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="group flex w-full items-center justify-between bg-white px-6 py-5 text-left transition duration-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60 sm:px-7"
-                >
-
-                  <div>
-
-                    <span className="block text-[9px] font-semibold uppercase tracking-[0.18em] text-[#050a13]">
-                      {submitting
-                        ? "Sending enquiry..."
-                        : "Send enquiry"}
-                    </span>
-
-                    {!submitting && (
-                      <span className="mt-1 block text-[8px] text-slate-500">
-                        Let&apos;s talk about your project
-                      </span>
-                    )}
-
-                  </div>
-
-                  {!submitting && (
-                    <span className="text-xl text-[#050a13] transition-transform duration-300 group-hover:translate-x-2">
-                      →
-                    </span>
-                  )}
-
-                  {submitting && (
-                    <span className="h-4 w-4 animate-spin rounded-full border border-[#050a13]/20 border-t-[#050a13]" />
-                  )}
-
-                </button>
-
-                {/* SUCCESS */}
-
-                {success && (
-                  <div className="flex items-start gap-3 border-t border-emerald-400/20 pt-5">
-
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-
-                    <div>
-
-                      <p className="text-sm font-medium text-emerald-400">
-                        Enquiry sent.
-                      </p>
-
-                      <p className="mt-1 text-xs text-slate-600">
-                        Thanks — we&apos;ll be in touch.
-                      </p>
-
-                    </div>
-
-                  </div>
-                )}
-
-                {/* ERROR */}
-
-                {errorMessage && (
-                  <div className="flex items-start gap-3 border-t border-red-400/20 pt-5">
-
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
-
-                    <p className="text-sm text-red-400">
-                      {errorMessage}
-                    </p>
-
-                  </div>
-                )}
-
-              </form>
-
-            </div>
-
-          </div>
-
+            </Link>
+          </motion.div>
         </div>
-
       </section>
 
-      {/* ========================================================== */}
-      {/* FOOTER                                                     */}
-      {/* ========================================================== */}
+      {/* ====================================================== */}
+      {/* FOOTER                                                 */}
+      {/* ====================================================== */}
 
-      <footer className="border-t border-white/[0.07] bg-[#050a13]">
-
+      <footer className="relative border-t border-white/[0.07] bg-[#050a13]">
         <div className="mx-auto max-w-[1500px] px-6 py-12 sm:px-10 lg:px-16">
-
           <div className="flex flex-col gap-12 sm:flex-row sm:items-end sm:justify-between">
-
-            {/* BRAND */}
-
             <div>
-
               <Image
                 src="/plk-logo.png"
                 alt="PLK Systems"
@@ -681,59 +458,35 @@ export default function Home() {
               />
 
               <p className="mt-5 max-w-sm text-xs leading-6 text-slate-600">
-                Websites, applications and systems built
-                around your business.
+                Websites, applications and systems built around
+                your business.
               </p>
-
             </div>
-
-            {/* LINKS */}
 
             <div className="flex flex-wrap gap-x-7 gap-y-4">
-
-              <a
-                href="#services"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
+              <FooterLink href="/services">
                 Services
-              </a>
+              </FooterLink>
 
-              <a
-                href="#work"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
+              <FooterLink href="/work">
                 Work
-              </a>
+              </FooterLink>
 
-              <a
-                href="#process"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
-                Process
-              </a>
+              <FooterLink href="/about">
+                About
+              </FooterLink>
 
-              <a
-                href="#contact"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
+              <FooterLink href="/contact">
                 Contact
-              </a>
+              </FooterLink>
 
-              <a
-                href="/privacy"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
+              <FooterLink href="/privacy">
                 Privacy
-              </a>
-
+              </FooterLink>
             </div>
-
           </div>
 
-          {/* BOTTOM */}
-
           <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-6 text-[8px] uppercase tracking-[0.16em] text-slate-700 sm:flex-row sm:items-center sm:justify-between">
-
             <span>
               © {new Date().getFullYear()} PLK Systems
             </span>
@@ -741,13 +494,105 @@ export default function Home() {
             <span>
               Software built around your business.
             </span>
-
           </div>
-
         </div>
-
       </footer>
-
     </main>
+  );
+}
+
+/* ============================================================ */
+/* SIGNAL                                                       */
+/* ============================================================ */
+
+function Signal({
+  number,
+  label,
+  detail,
+  last = false,
+}: {
+  number: string;
+  label: string;
+  detail: string;
+  last?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.55,
+        ease,
+      }}
+      className={`group relative py-7 sm:px-7 lg:py-8 ${
+        last ? "" : "lg:border-r lg:border-white/[0.06]"
+      }`}
+    >
+      <div className="flex items-start gap-5">
+        <span className="mt-1 font-mono text-[7px] text-blue-400">
+          {number}
+        </span>
+
+        <div>
+          <p className="text-xs font-medium text-slate-300 transition-colors group-hover:text-white">
+            {label}
+          </p>
+
+          <p className="mt-1.5 text-[8px] uppercase tracking-[0.15em] text-slate-700">
+            {detail}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ============================================================ */
+/* SECTION MARKER                                               */
+/* ============================================================ */
+
+function SectionMarker({
+  number,
+  label,
+}: {
+  number: string;
+  label: string;
+}) {
+  return (
+    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30">
+      <div className="mx-auto max-w-[1500px] px-6 sm:px-10 lg:px-16">
+        <div className="flex items-center justify-between border-t border-white/[0.06] pt-5">
+          <span className="font-mono text-[7px] text-blue-400/70">
+            {number}
+          </span>
+
+          <span className="hidden text-[7px] font-semibold uppercase tracking-[0.2em] text-slate-800 sm:block">
+            {label}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================ */
+/* FOOTER LINK                                                  */
+/* ============================================================ */
+
+function FooterLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
+    >
+      {children}
+    </Link>
   );
 }
