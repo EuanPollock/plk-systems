@@ -1,969 +1,182 @@
-"use client";
-
 import Link from "next/link";
-import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
 
-import SiteHeader from "@/components/site-header";
+// PLK Systems / Services — server-rendered, no animation package required.
+// Replace app/services/page.tsx with this file.
 
 const services = [
   {
-    number: "01",
-    title: "WEBSITES.",
-    eyebrow: "More than something that looks good.",
-    description:
-      "Websites designed around what your business actually needs to achieve — from generating enquiries to taking bookings, payments and giving customers access to online services.",
-    capabilities: [
-      "Business websites",
-      "Customer portals",
-      "Online booking",
-      "Payments",
-      "Account areas",
-      "Enquiry systems",
-      "Third-party integrations",
-      "Content management",
-    ],
-    outcome: "Turn your website into part of how your business operates.",
-    visual: "website",
+    number: "01", slug: "websites", title: "Websites", kicker: "Make a stronger first impression.",
+    description: "More than a good-looking website. We create considered digital experiences that help customers find you, understand your offer and take action.",
+    features: ["Business websites", "Online bookings", "Customer portals", "Payments & enquiries", "Content management", "Integrations"],
+    outcome: "A website that works as hard as you do.",
   },
   {
-    number: "02",
-    title: "MOBILE APPS.",
-    eyebrow: "Your product. In their pocket.",
-    description:
-      "Mobile experiences for customers, teams and entirely new digital products — designed around frequent use, simple interactions and the features that matter.",
-    capabilities: [
-      "Customer apps",
-      "Internal team apps",
-      "Consumer products",
-      "User accounts",
-      "Notifications",
-      "Subscriptions",
-      "Progress tracking",
-      "Connected data",
-    ],
-    outcome: "Create a product people have a reason to keep using.",
-    visual: "mobile",
+    number: "02", slug: "apps", title: "Mobile apps", kicker: "An experience worth coming back to.",
+    description: "From a promising idea to a useful product, we design intuitive mobile experiences for customers, teams and communities.",
+    features: ["Customer apps", "Internal team apps", "User accounts", "Notifications", "Subscriptions", "Progress tracking"],
+    outcome: "Useful, intuitive products built for real people.",
   },
   {
-    number: "03",
-    title: "CUSTOM SOFTWARE.",
-    eyebrow: "Software shaped around your operation.",
-    description:
-      "Purpose-built systems for businesses that have outgrown spreadsheets, disconnected tools or software that forces their team to work the wrong way.",
-    capabilities: [
-      "Operations systems",
-      "CRM-style platforms",
-      "Job management",
-      "Customer management",
-      "Quotes & invoices",
-      "Dashboards",
-      "Reporting",
-      "Staff portals",
-    ],
-    outcome: "Put the way your business actually works into one system.",
-    visual: "software",
+    number: "03", slug: "software", title: "Custom software", kicker: "Your business, your way of working.",
+    description: "When spreadsheets and disconnected tools stop being enough, we build software around your processes — not the other way round.",
+    features: ["Operations systems", "Job management", "Customer management", "Dashboards", "Reporting", "Staff portals"],
+    outcome: "Less friction. More visibility. Better control.",
   },
   {
-    number: "04",
-    title: "AUTOMATION.",
-    eyebrow: "Less repetitive work. More connected systems.",
-    description:
-      "Automations that move information, trigger actions and connect the tools your business already uses — reducing manual admin without adding more complexity.",
-    capabilities: [
-      "Workflow automation",
-      "Automated emails",
-      "Data movement",
-      "Notifications",
-      "Document generation",
-      "System integrations",
-      "Status updates",
-      "Internal workflows",
-    ],
-    outcome: "Let the system handle the work that should not need a person.",
-    visual: "automation",
+    number: "04", slug: "automation", title: "Automation", kicker: "Make the repetitive work disappear.",
+    description: "Connect the tools you already use, reduce unnecessary admin and keep information moving without constant manual intervention.",
+    features: ["Workflow automation", "Automated emails", "System integrations", "Notifications", "Document generation", "Status updates"],
+    outcome: "More time for work that actually matters.",
   },
-];
+] as const;
 
 const problems = [
-  {
-    id: "admin",
-    label: "Too much manual admin",
-    result: "Automation",
-    copy:
-      "We can identify repetitive processes and build workflows that move information, trigger actions and keep systems updated automatically.",
-  },
-  {
-    id: "spreadsheets",
-    label: "We're running everything from spreadsheets",
-    result: "Custom Software",
-    copy:
-      "A purpose-built business system can bring customers, jobs, documents, reporting and day-to-day operations into one connected place.",
-  },
-  {
-    id: "website",
-    label: "Our website isn't doing enough",
-    result: "Website",
-    copy:
-      "We can turn it into a working part of the business with enquiries, bookings, accounts, payments, integrations or whatever your customers actually need.",
-  },
-  {
-    id: "idea",
-    label: "I have an app or product idea",
-    result: "Digital Product",
-    copy:
-      "We can take the idea from early product thinking through interface design and into a working web or mobile application.",
-  },
-  {
-    id: "systems",
-    label: "Our systems don't talk to each other",
-    result: "Integration + Automation",
-    copy:
-      "We can connect the important parts of your workflow so information moves between systems instead of being repeatedly entered by your team.",
-  },
-];
-
-const reveal = {
-  initial: { opacity: 0, y: 40 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.15 },
-  transition: {
-    duration: 0.75,
-    ease: [0.22, 1, 0.36, 1] as const,
-  },
-};
+  { number: "01", title: "Too much manual admin", solution: "Automation", description: "Move information, trigger actions and keep systems updated without repeating the same tasks." },
+  { number: "02", title: "Everything lives in spreadsheets", solution: "Custom software", description: "Bring jobs, customers, documents and reporting together in one place." },
+  { number: "03", title: "Our website isn't doing enough", solution: "Websites & portals", description: "Add bookings, payments, enquiries, accounts or integrations to make your website more useful." },
+  { number: "04", title: "I have an app or product idea", solution: "Digital products", description: "Take an idea from early planning through interface design and into a working application." },
+  { number: "05", title: "Our systems don't talk to each other", solution: "Integration & automation", description: "Connect important tools so information moves between them without being entered twice." },
+] as const;
 
 export default function ServicesPage() {
-  const [selectedProblem, setSelectedProblem] = useState(0);
-
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050a13] text-white">
-      <SiteHeader />
+    <main className="min-h-screen overflow-x-hidden bg-[#f5f4f0] text-[#151719] selection:bg-[#b9caff]">
+      <Header />
 
-      {/* ====================================================== */}
-      {/* HERO                                                   */}
-      {/* ====================================================== */}
-
-      <section className="relative min-h-[92vh] overflow-hidden pt-[76px]">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="plk-grid absolute inset-0 opacity-[0.035]" />
-
-          <div className="absolute left-[15%] top-[15%] h-[700px] w-[700px] rounded-full bg-blue-600/[0.07] blur-[220px]" />
-
-          <div className="absolute bottom-[-30%] right-[-10%] h-[700px] w-[700px] rounded-full bg-cyan-400/[0.035] blur-[220px]" />
-
-          <div className="absolute bottom-0 left-1/2 top-0 w-px bg-white/[0.025]" />
-        </div>
-
-        <div className="relative z-10 mx-auto flex min-h-[calc(92vh-76px)] max-w-[1500px] flex-col justify-between px-6 pb-10 pt-16 sm:px-10 lg:px-16 lg:pt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-between border-t border-white/[0.07] pt-6"
-          >
-            <div className="flex items-center gap-3">
-              <span className="h-px w-8 bg-blue-400" />
-
-              <span className="text-[8px] font-semibold uppercase tracking-[0.26em] text-blue-400">
-                Services
-              </span>
+      {/* INTRO */}
+      <section className="relative isolate overflow-hidden border-b border-[#151719]/10">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(to_right,#15171908_1px,transparent_1px)] [background-size:110px_110px]" />
+        <div className="relative mx-auto max-w-[1520px] px-6 pb-20 pt-14 sm:px-10 sm:pb-24 sm:pt-20 lg:px-16 lg:pb-28 lg:pt-24">
+          <Eyebrow left="01 / WHAT WE DO" right="PLK SYSTEMS / SERVICES" />
+          <div className="mt-12 grid items-end gap-10 lg:mt-16 lg:grid-cols-[1.25fr_.75fr] lg:gap-16">
+            <div>
+              <p className="mb-5 text-[11px] font-bold uppercase tracking-[.22em] text-[#315cff]">Start with the problem. Not the technology.</p>
+              <h1 className="text-[clamp(3.7rem,8.3vw,9.2rem)] font-semibold leading-[.86] tracking-[-.085em]">
+                BUILT FOR<br /><span className="text-[#315cff]">WHAT&apos;S</span><br />NEXT<span className="text-[#315cff]">.</span>
+              </h1>
             </div>
-
-            <span className="hidden font-mono text-[8px] uppercase tracking-[0.16em] text-slate-700 sm:block">
-              Digital systems / built around you
-            </span>
-          </motion.div>
-
-          <div className="py-20 lg:py-24">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="mb-7 text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-600"
-            >
-              Start with the problem. Not the technology.
-            </motion.p>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 1,
-                delay: 0.15,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="text-[4.6rem] font-semibold leading-[0.78] tracking-[-0.075em] sm:text-[7rem] lg:text-[9rem] xl:text-[10.5rem]"
-            >
-              WHAT DO
-              <span className="block">YOU NEED</span>
-              <span className="block text-slate-700">BUILT?</span>
-            </motion.h1>
+            <div className="max-w-[490px] lg:pb-3">
+              <p className="border-l-2 border-[#315cff] pl-6 text-[17px] leading-[1.75] text-[#596167] sm:text-[20px]">
+                Websites, mobile apps, custom software and automation — designed around the way your business actually works.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-6">
+                <Link href="/contact" className="group inline-flex items-center gap-8 rounded-full bg-[#151719] px-7 py-4 text-xs font-semibold text-white transition-colors hover:bg-[#315cff]">Discuss your project <span className="text-lg transition-transform group-hover:translate-x-1">↗</span></Link>
+                <a href="#services" className="border-b border-[#151719]/40 pb-2 text-xs font-semibold transition-colors hover:border-[#315cff] hover:text-[#315cff]">Explore services ↓</a>
+              </div>
+            </div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="grid gap-8 border-t border-white/[0.07] pt-7 lg:grid-cols-[1fr_auto]"
-          >
-            <p className="max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
-              Websites, mobile apps, internal systems and automation —
-              designed around the problem you&apos;re trying to solve rather
-              than forcing your business into an off-the-shelf product.
-            </p>
-
-            <div className="flex items-end">
-              <span className="text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-700">
-                Scroll to explore ↓
-              </span>
-            </div>
-          </motion.div>
+          <div className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t border-[#151719]/15 pt-5 text-[10px] font-bold uppercase tracking-[.15em] text-[#72787c] lg:mt-20"><span>Independent digital studio / UK</span><span>Four disciplines. One joined-up approach.</span></div>
         </div>
       </section>
 
-      {/* ====================================================== */}
-      {/* SERVICES                                               */}
-      {/* ====================================================== */}
-
-      <section className="relative border-t border-white/[0.05]">
-        {services.map((service, index) => (
-          <ServiceSection
-            key={service.number}
-            service={service}
-            index={index}
-          />
-        ))}
-      </section>
-
-      {/* ====================================================== */}
-      {/* PROBLEM FINDER                                         */}
-      {/* ====================================================== */}
-
-      <section className="relative overflow-hidden bg-[#eef0f2] text-[#0a0d12]">
-        <div className="pointer-events-none absolute inset-0">
-          <div
-            className="absolute inset-0 opacity-[0.035]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(0,0,0,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.2) 1px, transparent 1px)",
-              backgroundSize: "70px 70px",
-            }}
-          />
-
-          <div className="absolute right-[-15%] top-[-20%] h-[700px] w-[700px] rounded-full bg-blue-500/[0.08] blur-[200px]" />
-        </div>
-
-        <div className="relative z-10 mx-auto max-w-[1500px] px-6 py-28 sm:px-10 sm:py-36 lg:px-16 lg:py-44">
-          <motion.div {...reveal}>
-            <div className="flex items-center justify-between border-t border-black/[0.1] pt-7">
-              <div className="flex items-center gap-3">
-                <span className="h-px w-8 bg-black" />
-
-                <span className="text-[8px] font-semibold uppercase tracking-[0.25em] text-black/50">
-                  Not sure what you need?
-                </span>
-              </div>
-
-              <span className="hidden font-mono text-[8px] text-black/25 sm:block">
-                PLK / FINDER
-              </span>
-            </div>
-
-            <div className="mt-16 grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.26em] text-black/35">
-                  Start here
-                </p>
-
-                <h2 className="mt-5 text-[4rem] font-semibold leading-[0.82] tracking-[-0.07em] sm:text-[5rem] lg:text-[6.5rem]">
-                  WHAT&apos;S
-                  <span className="block text-black/25">
-                    THE PROBLEM?
-                  </span>
-                </h2>
-
-                <p className="mt-8 max-w-md text-sm leading-7 text-black/50 sm:text-base">
-                  You don&apos;t need to know whether you need an app,
-                  automation or custom system. Tell us what isn&apos;t
-                  working first.
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                {problems.map((problem, index) => {
-                  const active = selectedProblem === index;
-
-                  return (
-                    <button
-                      key={problem.id}
-                      type="button"
-                      onClick={() => setSelectedProblem(index)}
-                      className={`group flex w-full items-center justify-between border px-5 py-5 text-left transition-all duration-300 sm:px-6 ${
-                        active
-                          ? "border-black bg-black text-white"
-                          : "border-black/[0.12] bg-white/30 text-black hover:border-black/30 hover:bg-white/60"
-                      }`}
-                    >
-                      <span className="flex items-center gap-4">
-                        <span
-                          className={`font-mono text-[8px] ${
-                            active ? "text-blue-400" : "text-black/25"
-                          }`}
-                        >
-                          0{index + 1}
-                        </span>
-
-                        <span className="text-sm font-medium sm:text-base">
-                          {problem.label}
-                        </span>
-                      </span>
-
-                      <span
-                        className={`text-sm transition-transform duration-300 ${
-                          active
-                            ? "translate-x-0"
-                            : "-translate-x-1 opacity-30 group-hover:translate-x-0 group-hover:opacity-100"
-                        }`}
-                      >
-                        →
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* result */}
-
-            <div className="mt-12 lg:ml-[calc(40%+3rem)]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={problems[selectedProblem].id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="border-t border-black/[0.12] pt-8"
-                >
-                  <div className="grid gap-7 sm:grid-cols-[170px_1fr]">
-                    <div>
-                      <p className="text-[7px] font-semibold uppercase tracking-[0.22em] text-black/30">
-                        Possible direction
-                      </p>
-
-                      <p className="mt-3 text-sm font-semibold">
-                        {problems[selectedProblem].result}
-                      </p>
+      {/* SERVICES */}
+      <section id="services" className="scroll-mt-6 bg-white py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-[1520px] px-6 sm:px-10 lg:px-16">
+          <Eyebrow left="02 / EXPERTISE" right="WHAT WE CAN BUILD" />
+          <div className="mt-9 flex flex-wrap items-end justify-between gap-7">
+            <h2 className="text-[clamp(3.2rem,6.3vw,7rem)] font-semibold leading-[.91] tracking-[-.075em]">ONE STUDIO.<br /><span className="text-[#9da3a7]">MORE POSSIBLE.</span></h2>
+            <p className="max-w-[390px] text-[15px] leading-7 text-[#62696e]">Every business is different. The right solution might be one service — or several working together.</p>
+          </div>
+          <div className="mt-14 space-y-4 lg:mt-16">
+            {services.map((service, index) => (
+              <article key={service.number} id={service.slug} className="group scroll-mt-8 overflow-hidden rounded-[22px] border border-[#151719]/10 bg-[#f5f4f0] lg:rounded-[28px]">
+                <div className="grid lg:grid-cols-[1fr_.9fr]">
+                  <div className="flex flex-col p-7 sm:p-10 lg:p-12 xl:p-14">
+                    <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[.19em] text-[#737b80]"><span className="text-[#315cff]">{service.number}</span><span className="h-px w-8 bg-[#151719]/20"/><span>{service.kicker}</span></div>
+                    <h3 className="mt-10 text-[clamp(2.8rem,5vw,5.7rem)] font-semibold leading-[.92] tracking-[-.07em]">{service.title}<span className="text-[#315cff]">.</span></h3>
+                    <p className="mt-6 max-w-[550px] text-[15px] leading-8 text-[#61696e] sm:text-[17px]">{service.description}</p>
+                    <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[#151719]/15 pt-7 sm:gap-x-7">
+                      {service.features.map((feature) => <div key={feature} className="flex items-start gap-2.5 text-[12px] leading-5 text-[#4d555a] sm:text-[13px]"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#315cff]"/>{feature}</div>)}
                     </div>
-
-                    <div>
-                      <p className="max-w-xl text-sm leading-7 text-black/55">
-                        {problems[selectedProblem].copy}
-                      </p>
-
-                      <Link
-                        href="/contact"
-                        className="group mt-7 inline-flex items-center gap-4 text-[8px] font-semibold uppercase tracking-[0.2em] text-black"
-                      >
-                        Discuss this with us
-
-                        <span className="transition-transform duration-300 group-hover:translate-x-1">
-                          →
-                        </span>
-                      </Link>
+                    <div className="mt-9 flex flex-wrap items-center justify-between gap-5 border-t border-[#151719]/15 pt-6">
+                      <span className="max-w-[320px] text-[13px] font-semibold text-[#31383d]">{service.outcome}</span>
+                      <Link href="/contact" className="inline-flex items-center gap-3 text-[12px] font-bold text-[#315cff] hover:underline">Talk about this service <span aria-hidden="true">↗</span></Link>
                     </div>
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ====================================================== */}
-      {/* CONNECTED THINKING                                     */}
-      {/* ====================================================== */}
-
-      <section className="relative overflow-hidden bg-[#050a13]">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="plk-grid absolute inset-0 opacity-[0.025]" />
-
-          <div className="absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/[0.06] blur-[220px]" />
-        </div>
-
-        <div className="relative z-10 mx-auto max-w-[1500px] px-6 py-28 sm:px-10 sm:py-36 lg:px-16 lg:py-44">
-          <motion.div {...reveal}>
-            <p className="text-[8px] font-semibold uppercase tracking-[0.26em] text-blue-400">
-              One connected approach
-            </p>
-
-            <div className="mt-7 grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-              <h2 className="text-[4rem] font-semibold leading-[0.82] tracking-[-0.07em] sm:text-[5.5rem] lg:text-[7rem]">
-                IT DOESN&apos;T
-                <span className="block">HAVE TO BE</span>
-                <span className="block text-slate-700">
-                  JUST ONE.
-                </span>
-              </h2>
-
-              <div className="max-w-md lg:pb-2">
-                <p className="text-base leading-8 text-slate-400">
-                  A website can connect to your internal system. Your app can
-                  share the same customer data. Automation can sit between
-                  them. We can build the pieces as one connected digital
-                  ecosystem.
-                </p>
-
-                <div className="mt-9 flex flex-wrap gap-2">
-                  {[
-                    "Website",
-                    "App",
-                    "Software",
-                    "Automation",
-                  ].map((item, index) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2"
-                    >
-                      <span className="border border-white/[0.09] bg-white/[0.025] px-3 py-2 text-[7px] font-semibold uppercase tracking-[0.17em] text-slate-500">
-                        {item}
-                      </span>
-
-                      {index < 3 && (
-                        <span className="text-[8px] text-blue-400/50">
-                          +
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  <div className={`relative flex min-h-[340px] items-center justify-center overflow-hidden p-7 sm:min-h-[440px] sm:p-12 lg:min-h-[530px] ${index === 0 ? "bg-[#e2e7e9]" : index === 1 ? "bg-[#dce3ff]" : index === 2 ? "bg-[#dce2df]" : "bg-[#dfe4f2]"}`}>
+                    <ServiceArt type={service.slug} />
+                    <span className="absolute bottom-5 right-6 text-[9px] font-bold uppercase tracking-[.17em] text-[#151719]/40">PLK / {service.number}</span>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ====================================================== */}
-      {/* CTA                                                    */}
-      {/* ====================================================== */}
-
-      <section className="relative overflow-hidden border-t border-white/[0.06] bg-[#050a13]">
-        <div className="relative z-10 mx-auto max-w-[1500px] px-6 py-28 sm:px-10 sm:py-36 lg:px-16 lg:py-44">
-          <motion.div
-            {...reveal}
-            className="grid gap-14 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
-          >
+      {/* PROBLEM FINDER — native disclosure, no JS required */}
+      <section className="bg-[#10151b] py-20 text-white sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-[1520px] px-6 sm:px-10 lg:px-16">
+          <Eyebrow left="03 / FIND YOUR STARTING POINT" right="YOU DON'T NEED A TECHNICAL BRIEF" dark />
+          <div className="mt-9 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
             <div>
-              <p className="mb-7 text-[8px] font-semibold uppercase tracking-[0.26em] text-blue-400">
-                Have something in mind?
-              </p>
-
-              <h2 className="text-[4rem] font-semibold leading-[0.82] tracking-[-0.07em] sm:text-[6rem] lg:text-[8rem]">
-                LET&apos;S BUILD
-                <span className="block text-slate-700">
-                  WHAT&apos;S NEXT.
-                </span>
-              </h2>
+              <h2 className="text-[clamp(3.3rem,6.2vw,6.9rem)] font-semibold leading-[.9] tracking-[-.075em]">WHAT&apos;S<br /><span className="text-[#8fa5ff]">GETTING</span><br />IN THE WAY?</h2>
+              <p className="mt-7 max-w-sm text-[15px] leading-8 text-[#a9b2be]">You don't have to know whether you need an app, a new website or custom software. Start with what's not working.</p>
+              <Link href="/contact" className="mt-8 inline-flex items-center gap-3 border-b border-white/40 pb-2 text-sm font-semibold transition-colors hover:border-[#8fa5ff] hover:text-[#8fa5ff]">Tell us about your challenge ↗</Link>
             </div>
-
-            <div className="max-w-md lg:pb-3">
-              <p className="text-base leading-8 text-slate-400">
-                Tell us what you&apos;re trying to improve, replace or create.
-                We&apos;ll start with the problem and work out what should be
-                built around it.
-              </p>
-
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link
-                  href="/contact"
-                  className="group inline-flex items-center gap-5 bg-white px-6 py-4 text-[8px] font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-blue-400"
-                >
-                  Start a project
-
-                  <span className="transition-transform duration-300 group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-
-                <Link
-                  href="/work"
-                  className="inline-flex items-center border border-white/[0.12] px-6 py-4 text-[8px] font-semibold uppercase tracking-[0.2em] text-slate-400 transition hover:border-white/30 hover:text-white"
-                >
-                  See our work
-                </Link>
-              </div>
+            <div className="divide-y divide-white/15 border-y border-white/15">
+              {problems.map((problem, index) => (
+                <details key={problem.number} open={index === 0} className="group py-1">
+                  <summary className="flex cursor-pointer list-none items-center gap-4 py-5 text-left [&::-webkit-details-marker]:hidden">
+                    <span className="w-8 shrink-0 text-[10px] font-bold text-[#8fa5ff]">{problem.number}</span>
+                    <span className="flex-1 text-[16px] font-semibold tracking-[-.025em] sm:text-[20px]">{problem.title}</span>
+                    <span aria-hidden="true" className="text-xl text-[#8fa5ff] transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="pb-7 pl-12">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#8fa5ff]">Possible direction / {problem.solution}</p>
+                    <p className="max-w-xl text-[14px] leading-7 text-[#a9b2be]">{problem.description}</p>
+                    <Link href="/contact" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-white hover:text-[#8fa5ff]">Discuss this ↗</Link>
+                  </div>
+                </details>
+              ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ====================================================== */}
-      {/* FOOTER                                                 */}
-      {/* ====================================================== */}
-
-      <footer className="border-t border-white/[0.07] bg-[#050a13]">
-        <div className="mx-auto max-w-[1500px] px-6 py-12 sm:px-10 lg:px-16">
-          <div className="flex flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Image
-                src="/plk-logo.png"
-                alt="PLK Systems"
-                width={130}
-                height={55}
-                className="h-auto w-[105px]"
-              />
-
-              <p className="mt-5 max-w-sm text-xs leading-6 text-slate-600">
-                Websites, applications and systems built around your business.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-x-7 gap-y-4">
-              <Link
-                href="/services"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-white"
-              >
-                Services
-              </Link>
-
-              <Link
-                href="/work"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
-                Work
-              </Link>
-
-              <Link
-                href="/about"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
-                About
-              </Link>
-
-              <Link
-                href="/contact"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
-                Contact
-              </Link>
-
-              <Link
-                href="/privacy"
-                className="text-[8px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-white"
-              >
-                Privacy
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-6 text-[8px] uppercase tracking-[0.16em] text-slate-700 sm:flex-row sm:items-center sm:justify-between">
-            <span>© {new Date().getFullYear()} PLK Systems</span>
-
-            <span>Software built around your business.</span>
+      {/* CONNECTED THINKING */}
+      <section className="bg-[#f5f4f0] py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-[1520px] px-6 sm:px-10 lg:px-16">
+          <Eyebrow left="04 / THE BIGGER PICTURE" right="BETTER TOGETHER" />
+          <div className="mt-9 grid items-end gap-9 lg:grid-cols-[1.1fr_.9fr] lg:gap-20">
+            <h2 className="text-[clamp(3.4rem,6.8vw,7.5rem)] font-semibold leading-[.89] tracking-[-.075em]">IT DOESN&apos;T<br />HAVE TO BE<br /><span className="text-[#315cff]">JUST ONE.</span></h2>
+            <div className="lg:pb-2"><p className="max-w-lg text-[16px] leading-8 text-[#61696e]">Your website can connect to your internal system. Your app can share the same data. Automation can keep everything moving. We think about how the pieces work together.</p><div className="mt-8 flex flex-wrap gap-2">{["Website", "App", "Software", "Automation"].map((item) => <span key={item} className="rounded-full border border-[#151719]/15 bg-white px-4 py-2.5 text-[11px] font-semibold">{item}</span>)}</div></div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-[#315cff] py-20 text-white sm:py-28 lg:py-32">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-28 -top-32 h-[550px] w-[550px] rounded-full border border-white/20 sm:h-[750px] sm:w-[750px]"/>
+        <div className="relative mx-auto max-w-[1520px] px-6 sm:px-10 lg:px-16">
+          <Eyebrow left="05 / NEXT STEPS" right="YOUR MOVE" dark />
+          <h2 className="mt-10 text-[clamp(3.8rem,9vw,10rem)] font-semibold leading-[.84] tracking-[-.085em]">LET&apos;S BUILD<br />SOMETHING<br /><span className="text-[#bfd0ff]">BETTER.</span></h2>
+          <div className="mt-12 flex flex-wrap items-end justify-between gap-8 border-t border-white/30 pt-8"><p className="max-w-md text-[16px] leading-8 text-white/85">Tell us what you want to improve, replace or create. We'll work out the right way to build it.</p><Link href="/contact" className="group inline-flex items-center justify-between gap-14 rounded-full bg-white px-7 py-5 text-sm font-bold text-[#151719] transition-colors hover:bg-[#e8edff]">Start a project <span className="text-xl transition-transform group-hover:translate-x-1">↗</span></Link></div>
+        </div>
+      </section>
+      <Footer />
     </main>
   );
 }
 
-function ServiceSection({
-  service,
-  index,
-}: {
-  service: (typeof services)[number];
-  index: number;
-}) {
-  const alternate = index % 2 === 1;
-
-  return (
-    <div className="relative overflow-hidden border-b border-white/[0.06]">
-      <div className="pointer-events-none absolute inset-0">
-        <div
-          className={`absolute top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-blue-600/[0.045] blur-[200px] ${
-            alternate ? "left-[-15%]" : "right-[-15%]"
-          }`}
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-[1500px] px-6 py-28 sm:px-10 sm:py-36 lg:px-16 lg:py-44">
-        <motion.div
-          {...reveal}
-          className="grid gap-16 lg:grid-cols-2 lg:items-center lg:gap-24"
-        >
-          <div className={alternate ? "lg:order-2" : ""}>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[8px] text-blue-400">
-                {service.number}
-              </span>
-
-              <span className="h-px w-10 bg-white/[0.1]" />
-
-              <span className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
-                {service.eyebrow}
-              </span>
-            </div>
-
-            <h2 className="mt-8 text-[3.8rem] font-semibold leading-[0.82] tracking-[-0.07em] sm:text-[5rem] lg:text-[6rem]">
-              {service.title}
-            </h2>
-
-            <p className="mt-8 max-w-xl text-sm leading-7 text-slate-400 sm:text-base sm:leading-8">
-              {service.description}
-            </p>
-
-            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/[0.08] pt-8">
-              {service.capabilities.map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3"
-                >
-                  <span className="h-1 w-1 rounded-full bg-blue-400" />
-
-                  <span className="text-xs text-slate-500">
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10 border-l border-blue-400/40 pl-5">
-              <p className="max-w-md text-sm leading-7 text-slate-300">
-                {service.outcome}
-              </p>
-            </div>
-          </div>
-
-          <div className={alternate ? "lg:order-1" : ""}>
-            <ServiceVisual type={service.visual} />
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
+function Eyebrow({left,right,dark=false}:{left:string;right:string;dark?:boolean}) {
+  return <div className={`flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-[10px] font-bold uppercase tracking-[.18em] ${dark ? "border-white/25 text-white/70" : "border-[#151719]/15 text-[#747b80]"}`}><span>{left}</span><span>{right}</span></div>;
 }
 
-function ServiceVisual({ type }: { type: string }) {
-  if (type === "website") {
-    return (
-      <div className="relative mx-auto max-w-[620px]">
-        <div className="absolute -inset-16 -z-10 rounded-full bg-blue-500/[0.07] blur-[120px]" />
-
-        <motion.div
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.35 }}
-          className="overflow-hidden rounded-xl border border-white/[0.09] bg-[#0a101a] shadow-[0_50px_130px_rgba(0,0,0,0.55)]"
-        >
-          <div className="flex h-10 items-center justify-between border-b border-white/[0.06] px-4">
-            <div className="flex gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-white/15" />
-              <span className="h-2 w-2 rounded-full bg-white/10" />
-              <span className="h-2 w-2 rounded-full bg-white/10" />
-            </div>
-
-            <div className="h-1.5 w-28 rounded-full bg-white/[0.07]" />
-
-            <span className="text-[6px] uppercase tracking-[0.18em] text-slate-700">
-              WEB
-            </span>
-          </div>
-
-          <div className="p-6 sm:p-8">
-            <div className="flex items-center justify-between">
-              <div className="h-3 w-20 rounded-full bg-white/70" />
-
-              <div className="flex gap-4">
-                <div className="h-1.5 w-10 rounded-full bg-white/10" />
-                <div className="h-1.5 w-10 rounded-full bg-white/10" />
-                <div className="h-1.5 w-10 rounded-full bg-white/10" />
-              </div>
-            </div>
-
-            <div className="py-14 sm:py-20">
-              <div className="h-2 w-20 rounded-full bg-blue-400/50" />
-
-              <div className="mt-5 h-7 w-[80%] rounded bg-white/80 sm:h-9" />
-
-              <div className="mt-3 h-7 w-[55%] rounded bg-white/15 sm:h-9" />
-
-              <div className="mt-6 h-2 w-[65%] rounded-full bg-white/10" />
-
-              <div className="mt-2 h-2 w-[50%] rounded-full bg-white/[0.06]" />
-
-              <div className="mt-8 h-9 w-28 bg-blue-500/80" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="h-24 border border-white/[0.06] bg-white/[0.02]"
-                />
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (type === "mobile") {
-    return (
-      <div className="relative mx-auto flex min-h-[570px] max-w-[620px] items-center justify-center">
-        <div className="absolute h-[500px] w-[500px] rounded-full bg-blue-500/[0.06] blur-[130px]" />
-
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative z-20 w-[210px] sm:w-[235px]"
-        >
-          <MockPhone />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 0.45, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="absolute right-[4%] top-[18%] hidden w-[175px] rotate-6 sm:block"
-        >
-          <MockPhone />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 0.35, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="absolute bottom-[8%] left-[5%] hidden w-[165px] -rotate-6 md:block"
-        >
-          <MockPhone />
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (type === "software") {
-    return (
-      <div className="relative mx-auto max-w-[620px]">
-        <div className="absolute -inset-16 -z-10 rounded-full bg-blue-500/[0.07] blur-[120px]" />
-
-        <div className="overflow-hidden rounded-xl border border-white/[0.09] bg-[#0a101a] shadow-[0_50px_130px_rgba(0,0,0,0.6)]">
-          <div className="flex h-11 items-center justify-between border-b border-white/[0.06] px-4">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-blue-400" />
-
-              <span className="text-[7px] font-semibold uppercase tracking-[0.17em] text-slate-500">
-                Operations
-              </span>
-            </div>
-
-            <span className="font-mono text-[7px] text-slate-700">
-              LIVE
-            </span>
-          </div>
-
-          <div className="grid grid-cols-[70px_1fr] sm:grid-cols-[110px_1fr]">
-            <div className="border-r border-white/[0.06] p-3 sm:p-4">
-              <div className="mb-8 h-3 w-8 rounded-full bg-white/30" />
-
-              <div className="space-y-5">
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <div
-                    key={item}
-                    className={`h-1.5 rounded-full ${
-                      item === 1
-                        ? "w-10 bg-blue-400/60"
-                        : "w-8 bg-white/[0.07]"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="p-5 sm:p-7">
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="h-2 w-14 rounded-full bg-white/15" />
-
-                  <div className="mt-3 h-5 w-32 rounded bg-white/60" />
-                </div>
-
-                <div className="h-8 w-20 rounded bg-blue-500/70" />
-              </div>
-
-              <div className="mt-7 grid grid-cols-3 gap-3">
-                {[72, 24, 18].map((number) => (
-                  <div
-                    key={number}
-                    className="border border-white/[0.06] bg-white/[0.02] p-3"
-                  >
-                    <p className="font-mono text-lg text-white">
-                      {number}
-                    </p>
-
-                    <div className="mt-2 h-1 w-10 rounded-full bg-white/10" />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 border border-white/[0.06]">
-                {[1, 2, 3, 4].map((item) => (
-                  <div
-                    key={item}
-                    className="grid grid-cols-[1fr_70px_50px] items-center gap-3 border-b border-white/[0.05] px-3 py-3 last:border-b-0"
-                  >
-                    <div className="h-1.5 w-20 rounded-full bg-white/10" />
-                    <div className="h-1.5 w-10 rounded-full bg-white/[0.06]" />
-                    <div className="h-4 rounded-full bg-blue-400/[0.08]" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative mx-auto flex min-h-[520px] max-w-[620px] items-center justify-center">
-      <div className="absolute h-[480px] w-[480px] rounded-full bg-blue-500/[0.06] blur-[140px]" />
-
-      <div className="relative h-[420px] w-full">
-        <div className="absolute left-1/2 top-1/2 h-px w-[60%] -translate-x-1/2 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
-
-        <div className="absolute bottom-[20%] left-1/2 top-[20%] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400/30 to-transparent" />
-
-        {[
-          {
-            label: "Enquiry",
-            position: "left-[3%] top-[12%]",
-          },
-          {
-            label: "Customer",
-            position: "right-[3%] top-[12%]",
-          },
-          {
-            label: "Invoice",
-            position: "bottom-[10%] left-[3%]",
-          },
-          {
-            label: "Email",
-            position: "bottom-[10%] right-[3%]",
-          },
-        ].map((node, index) => (
-          <motion.div
-            key={node.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{
-              duration: 0.5,
-              delay: index * 0.1,
-            }}
-            className={`absolute ${node.position} flex h-20 w-28 items-center justify-center border border-white/[0.08] bg-[#0a101a]/90 backdrop-blur`}
-          >
-            <span className="text-[7px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-              {node.label}
-            </span>
-          </motion.div>
-        ))}
-
-        <motion.div
-          animate={{
-            boxShadow: [
-              "0 0 0 rgba(96,165,250,0)",
-              "0 0 45px rgba(96,165,250,0.12)",
-              "0 0 0 rgba(96,165,250,0)",
-            ],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-          }}
-          className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-blue-400/25 bg-[#0a101a]"
-        >
-          <div className="text-center">
-            <span className="mx-auto block h-2 w-2 rounded-full bg-blue-400 shadow-[0_0_16px_rgba(96,165,250,0.8)]" />
-
-            <p className="mt-4 text-[8px] font-semibold uppercase tracking-[0.2em] text-white">
-              Automation
-            </p>
-
-            <p className="mt-1 text-[6px] uppercase tracking-[0.16em] text-slate-600">
-              Running
-            </p>
-          </div>
-        </motion.div>
-
-        <motion.span
-          animate={{
-            left: ["20%", "80%", "20%"],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(96,165,250,0.8)]"
-        />
-      </div>
-    </div>
-  );
+function Header() {
+  return <header className="relative z-30 border-b border-[#151719]/10 bg-[#f5f4f0]"><div className="mx-auto flex h-[78px] max-w-[1520px] items-center justify-between px-6 sm:px-10 lg:px-16">
+    <Link href="/" aria-label="PLK Systems home" className="group flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#151719] text-[14px] font-black tracking-[-.11em] text-white transition-transform duration-300 group-hover:-rotate-6">PLK</span><span className="text-[12px] font-bold uppercase tracking-[.18em]">Systems<span className="text-[#315cff]">.</span></span></Link>
+    <nav aria-label="Main navigation" className="hidden items-center gap-9 md:flex"><Link className="nav-link" href="/services" aria-current="page">Services</Link><Link className="nav-link" href="/work">Work</Link><Link className="nav-link" href="/about">About</Link><Link className="nav-link" href="/lab">The Lab</Link></nav>
+    <Link href="/contact" className="hidden items-center gap-5 rounded-full bg-[#151719] px-5 py-3.5 text-[11px] font-semibold text-white transition-colors hover:bg-[#315cff] md:inline-flex">Start a project <span aria-hidden="true">↗</span></Link>
+    <details className="relative md:hidden"><summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-[#151719]/20 px-4 py-2.5 text-xs font-semibold [&::-webkit-details-marker]:hidden">Menu <span aria-hidden="true">☰</span></summary><nav aria-label="Mobile navigation" className="absolute right-0 top-[calc(100%+12px)] flex w-56 flex-col gap-1 rounded-2xl border border-[#151719]/10 bg-white p-3 shadow-xl">{[["Services","/services"],["Work","/work"],["About","/about"],["The Lab","/lab"],["Contact","/contact"]].map(([label,href])=><Link key={href} href={href} className="rounded-lg px-4 py-3 text-sm font-medium hover:bg-[#f5f4f0]">{label}</Link>)}</nav></details>
+  </div></header>;
 }
 
-function MockPhone() {
-  return (
-    <div className="overflow-hidden rounded-[2rem] border-[6px] border-[#181d25] bg-[#0b1018] shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-      <div className="relative min-h-[430px] overflow-hidden rounded-[1.55rem] bg-[#080d14] p-5">
-        <div className="absolute left-1/2 top-2 h-4 w-14 -translate-x-1/2 rounded-full bg-black" />
-
-        <div className="pt-9">
-          <div className="flex items-center justify-between">
-            <div className="h-2 w-14 rounded-full bg-white/30" />
-
-            <div className="h-5 w-5 rounded-full border border-white/10" />
-          </div>
-
-          <div className="mt-10">
-            <div className="h-1.5 w-16 rounded-full bg-blue-400/60" />
-
-            <div className="mt-4 h-6 w-[85%] rounded bg-white/70" />
-
-            <div className="mt-2 h-6 w-[55%] rounded bg-white/15" />
-          </div>
-
-          <div className="mt-8 grid grid-cols-2 gap-2">
-            <div className="h-20 rounded-xl border border-white/[0.06] bg-white/[0.025]" />
-            <div className="h-20 rounded-xl border border-white/[0.06] bg-white/[0.025]" />
-          </div>
-
-          <div className="mt-3 h-28 rounded-xl border border-white/[0.06] bg-white/[0.025] p-3">
-            <div className="h-1.5 w-16 rounded-full bg-white/10" />
-
-            <div className="mt-5 flex h-14 items-end gap-1">
-              {[25, 45, 35, 65, 50, 80, 58, 90].map(
-                (height, index) => (
-                  <div
-                    key={index}
-                    className="flex-1 rounded-t-sm bg-blue-400/30"
-                    style={{ height: `${height}%` }}
-                  />
-                ),
-              )}
-            </div>
-          </div>
-
-          <div className="mt-4 h-10 rounded-lg bg-blue-500/70" />
-        </div>
-      </div>
-    </div>
-  );
+function ServiceArt({type}:{type:"websites"|"apps"|"software"|"automation"}) {
+  if(type==="websites") return <div className="relative w-full max-w-[530px] rotate-[-3deg] overflow-hidden rounded-2xl border border-white/50 bg-[#111923] shadow-[0_28px_65px_rgba(20,28,38,.28)] transition-transform duration-500 hover:rotate-0"><div className="flex h-10 items-center justify-between border-b border-white/10 px-4"><span className="flex gap-1.5"><i className="h-2 w-2 rounded-full bg-[#ff7777]"/><i className="h-2 w-2 rounded-full bg-[#ffce75]"/><i className="h-2 w-2 rounded-full bg-[#76d9b1]"/></span><span className="text-[9px] font-semibold text-white/50">yourbusiness.co.uk</span><span className="w-10"/></div><div className="p-7 sm:p-10"><div className="flex items-center justify-between text-white"><span className="text-[13px] font-black tracking-tight">YOUR BRAND<span className="text-[#8da6ff]">.</span></span><span className="text-[9px] text-white/50">Menu &nbsp; ☰</span></div><p className="mt-14 text-[9px] font-bold uppercase tracking-[.2em] text-[#9bb2ff]">A better digital experience</p><p className="mt-4 max-w-[340px] text-[clamp(1.8rem,3vw,3rem)] font-semibold leading-[1.05] tracking-[-.06em] text-white">Made to make an impression.</p><div className="mt-6 inline-block rounded-full bg-[#315cff] px-5 py-3 text-[10px] font-semibold text-white">Get started ↗</div><div className="mt-12 grid grid-cols-3 gap-2">{["Discover","Connect","Grow"].map(x=><div key={x} className="rounded-lg border border-white/10 bg-white/5 px-3 py-5 text-[9px] text-white/70">↗<br/><span className="mt-3 block">{x}</span></div>)}</div></div></div>;
+  if(type==="apps") return <div className="relative flex w-full items-center justify-center"><div aria-hidden="true" className="absolute h-[330px] w-[330px] rounded-full border border-[#315cff]/20"/><div aria-hidden="true" className="absolute h-[420px] w-[420px] rounded-full border border-[#315cff]/10"/><div className="relative z-10 w-[225px] rotate-[-7deg] rounded-[35px] border-[7px] border-[#202525] bg-[#141c1a] px-5 pb-7 pt-4 shadow-[0_35px_65px_rgba(20,28,38,.32)] transition-transform duration-500 hover:rotate-0"><div className="mx-auto mb-7 h-1 w-14 rounded-full bg-white/25"/><p className="text-[12px] font-bold tracking-[.2em] text-white">ASCENT</p><p className="mt-10 text-[10px] text-white/50">Your progress this week</p><p className="mt-2 text-5xl font-semibold tracking-[-.06em] text-white">05<span className="text-xl text-[#b7d5ad]">/07</span></p><div className="mt-7 flex h-24 items-end gap-2">{[42,65,54,92,69,80,100].map((n,i)=><div key={i} className="flex-1 rounded-t bg-[#b5d8aa]" style={{height:`${n}%`}}/>)}</div><div className="mt-7 rounded-lg bg-white/10 px-3 py-4 text-[10px] text-white">Next session <span className="float-right">↗</span></div></div><div className="absolute right-[3%] top-[13%] hidden w-[150px] rotate-[10deg] rounded-[25px] border-[5px] border-[#202525] bg-[#19211f] p-4 opacity-45 shadow-xl sm:block"><div className="h-1 w-10 rounded-full bg-white/20"/><div className="mt-12 h-5 w-16 rounded bg-white/30"/><div className="mt-4 h-24 rounded-lg bg-[#b5d8aa]/20"/><div className="mt-5 h-7 rounded-lg bg-white/10"/></div></div>;
+  if(type==="software") return <div className="w-full max-w-[550px] rotate-[2deg] overflow-hidden rounded-xl bg-[#121b25] shadow-[0_35px_70px_rgba(20,28,38,.28)] transition-transform duration-500 hover:rotate-0"><div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><span className="text-[12px] font-bold text-white">HORIZON <span className="text-[#8ba7ff]">/ OPS</span></span><span className="text-[9px] text-[#8ee1b2]">● ACTIVE</span></div><div className="grid grid-cols-[60px_1fr] sm:grid-cols-[95px_1fr]"><div className="space-y-5 border-r border-white/10 p-4">{[0,1,2,3,4].map(n=><div key={n} className={`h-2 rounded-full ${n===0?"w-full bg-[#6b8cff]":"w-3/4 bg-white/15"}`}/>)}</div><div className="min-w-0 p-5 sm:p-7"><p className="text-[9px] font-semibold uppercase tracking-[.15em] text-white/45">Operations overview</p><h4 className="mt-2 text-xl font-semibold text-white sm:text-2xl">Everything in one place.</h4><div className="mt-6 grid grid-cols-3 gap-2">{[["42","Active jobs"],["08","In review"],["96%","On track"]].map(([v,k])=><div key={k} className="rounded-lg border border-white/10 bg-white/5 p-3"><span className="block text-[clamp(12px,2vw,22px)] font-bold text-white">{v}</span><span className="text-[8px] text-white/45">{k}</span></div>)}</div><div className="mt-4 space-y-2">{["Customer onboarding","Scheduled delivery","Project review"].map((x,i)=><div key={x} className="flex items-center justify-between gap-2 rounded-md bg-white/5 px-3 py-3 text-[9px] text-white/70"><span className="truncate">{x}</span><span className={`rounded-full px-2 py-1 ${i===0?"bg-[#315cff]/30 text-[#aebeff]":"bg-white/10"}`}>{i===0?"In progress":"On track"}</span></div>)}</div></div></div></div>;
+  return <div className="relative w-full max-w-[520px] rounded-2xl bg-[#121b25] p-7 shadow-[0_30px_70px_rgba(20,28,38,.26)] sm:p-10"><div className="flex items-center justify-between border-b border-white/10 pb-5"><span className="text-[12px] font-bold text-white">CONNECTED WORKFLOW</span><span className="text-[9px] text-[#91e4b9]">● READY</span></div><div className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4"><div className="rounded-lg border border-white/10 bg-white/5 p-4 text-center"><span className="text-[9px] font-semibold text-white/60">ENQUIRY</span><p className="mt-3 text-lg text-white">01</p></div><span className="text-xl text-[#8da7ff]">→</span><div className="rounded-lg border border-[#315cff]/50 bg-[#315cff]/20 p-4 text-center"><span className="text-[9px] font-semibold text-white/60">CUSTOMER</span><p className="mt-3 text-lg text-white">02</p></div></div><div className="mx-auto my-5 h-10 w-px bg-[#8da7ff]/60"/><div className="mx-auto w-fit rounded-xl border border-[#8da7ff]/50 bg-[#315cff] px-7 py-5 text-center"><p className="text-[10px] font-bold uppercase tracking-[.15em] text-white">Automation running</p><p className="mt-2 text-[9px] text-white/70">No manual hand-off needed</p></div><div className="mx-auto my-5 h-10 w-px bg-[#8da7ff]/60"/><div className="grid grid-cols-2 gap-3">{["INVOICE GENERATED","EMAIL SENT"].map(x=><div key={x} className="rounded-lg border border-white/10 bg-white/5 p-4 text-center text-[9px] font-semibold text-white/75">✓ &nbsp; {x}</div>)}</div></div>;
 }
+
+function Footer(){return <footer className="bg-[#10151b] text-white"><div className="mx-auto max-w-[1520px] px-6 pb-8 pt-16 sm:px-10 lg:px-16"><div className="flex flex-col justify-between gap-12 border-b border-white/15 pb-14 md:flex-row"><div><Link href="/" className="text-3xl font-black tracking-[-.08em]">PLK<span className="text-[#7994ff]">.</span></Link><p className="mt-5 max-w-xs text-sm leading-7 text-[#a1aab4]">Digital solutions built around your business.</p></div><div className="grid grid-cols-2 gap-x-14 gap-y-4 text-sm sm:gap-x-24">{[["Services","/services"],["Work","/work"],["About","/about"],["Contact","/contact"],["The Lab","/lab"],["Privacy","/privacy"]].map(([label,href])=><Link key={href} className="footer-link" href={href}>{label}</Link>)}</div></div><div className="flex flex-wrap items-center justify-between gap-4 pt-7 text-[10px] text-[#8f9aa6]"><span>© {new Date().getFullYear()} PLK Systems. All rights reserved.</span><span>Made with purpose. Built to last.</span></div></div></footer>}
